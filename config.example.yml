@@ -1,0 +1,20 @@
+Server:
+  Port: 3000
+  Mode: debug
+
+Postgres:
+  Host: localhost
+  Username: username
+  Password: password
+  DBName: database
+  Port: 5432
+  SSLMode: disable
+  TimeZone: Asia/Shanghai
+
+Zap:
+  Level: debug
+  Prefix: "[memo-server] "
+  Directory: "log"
+  Format: "console"
+  ShowLine: true
+  LogInConsole: true

@@ -1,0 +1,9 @@
+__debug_*.exe
+.idea
+.vscode
+
+log/*
+!log/.gitkeep
+
+config.yml
+
