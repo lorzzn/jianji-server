@@ -15,20 +15,6 @@ import (
 
 var g errgroup.Group
 
-// Package main provides a simple HTTP API for memo.
-//
-//     Schemes: http
-//     BasePath: /api
-//     Version: 1.0.0
-//
-//     Consumes:
-//     - application/json
-//
-//     Produces:
-//     - application/json
-//
-// swagger:meta
-
 func main() {
 	//初始化数据库
 	utils.SetupDB()
@@ -36,13 +22,14 @@ func main() {
 	utils.SetupLogger()
 
 	gin.SetMode(config.Server.Mode)
-	router := gin.Default()
+	engine := gin.Default()
 
-	router.Use(middleware.CORS())
+	engine.Use(middleware.CORS())
 
-	routes.SetApiRoutes(router)
+	routes.SetApiRoutes(engine)
+	routes.SetupTestRoutes(engine)
 
-	router.GET("/", func(c *gin.Context) {
+	engine.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "server is running!")
 	})
 
@@ -51,7 +38,7 @@ func main() {
 		port = ":" + config.Server.Port
 	}
 	g.Go(func() error {
-		return router.Run(port)
+		return engine.Run(port)
 	})
 
 	if err := g.Wait(); err != nil {
