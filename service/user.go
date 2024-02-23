@@ -4,6 +4,7 @@ import (
 	"memo-server/dao"
 	"memo-server/entity"
 	"memo-server/model/request"
+	"memo-server/model/response"
 	"memo-server/utils"
 	"memo-server/utils/r"
 
@@ -12,17 +13,17 @@ import (
 
 type User struct{}
 
-func (*User) Signup(c *gin.Context) (code int, message string, data any) {
-	params, _ := utils.GetRequestParams[request.Signup](c)
-	if exist := checkUserExistByEmail(params.Email); exist {
+func (*User) Login(c *gin.Context) (code int, message string, data response.Login) {
+	params, _ := utils.GetRequestParams[request.Login](c)
+	//如果用户已经注册
+	if exist := getUserByEmail(params.Email); exist.ID != 0 {
 		code = r.USER_EXISTED
+		data = response.Login{UserInfo: exist}
 		return
 	}
 
 	user := &entity.User{
-		Name:   params.Name,
-		Avatar: params.Avatar,
-		Email:  params.Email,
+		Email: params.Email,
 	}
 	err := dao.Create(&user)
 	if err != nil {
@@ -34,7 +35,7 @@ func (*User) Signup(c *gin.Context) (code int, message string, data any) {
 }
 
 // 检查用户是否已经注册
-func checkUserExistByEmail(email string) bool {
+func getUserByEmail(email string) entity.User {
 	existUser, _ := dao.GetOne[entity.User]("email = ?", email)
-	return existUser.ID != 0
+	return existUser
 }

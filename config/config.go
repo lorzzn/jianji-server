@@ -15,6 +15,7 @@ var (
 	Server   typings.Server
 	Postgres typings.Postgres
 	Zap      typings.Zap
+	Redis    typings.Redis
 )
 
 func init() {
@@ -45,6 +46,7 @@ func init() {
 		"Server":   &Server,
 		"Postgres": &Postgres,
 		"Zap":      &Zap,
+		"Redis":    &Redis,
 	}
 
 	for key, val := range configMap {

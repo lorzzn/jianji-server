@@ -8,7 +8,7 @@ import (
 
 type User struct{}
 
-func (*User) Signup(c *gin.Context) {
-	var code, message, data = UserService.Signup(c)
-	r.OkResult(c, code, message, data)
+func (*User) Login(c *gin.Context) {
+	var code, message, data = UserService.Login(c)
+	r.OkJsonResult(c, code, message, data)
 }

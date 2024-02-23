@@ -11,9 +11,9 @@ import (
 
 type User struct{}
 
-func (*User) Signup() gin.HandlerFunc {
+func (*User) Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		params, _ := utils.GetRequestParams[request.Signup](c)
+		params, _ := utils.GetRequestParams[request.Login](c)
 		if err := StructValidate(c, &params,
 			validation.Field(&params.Email, validation.Required, is.Email),
 			validation.Field(&params.Password, validation.Required),

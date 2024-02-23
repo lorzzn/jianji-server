@@ -1,8 +1,11 @@
 package r
 
 import (
+	"encoding/json"
 	"net/http"
 
+	"github.com/Rican7/conjson"
+	"github.com/Rican7/conjson/transform"
 	"github.com/gin-gonic/gin"
 )
 
@@ -13,17 +16,23 @@ type Response struct {
 	Data    any    `json:"data"`
 }
 
-func Result(c *gin.Context, httpCode, code int, msg string, data any) {
-	c.JSON(httpCode, Response{
+func JsonResult(c *gin.Context, httpCode, code int, msg string, data any) {
+	marshaller := conjson.NewMarshaler(Response{
 		Code:    code,
 		Message: msg,
 		Data:    data,
-	})
+	}, transform.CamelCaseKeys(false))
+
+	data2, _ := json.Marshal(marshaller)
+
+	c.Header("Content-Type", "application/json")
+	c.String(httpCode, string(data2))
 }
 
-func OkResult(c *gin.Context, code int, message string, data any) {
+func OkJsonResult(c *gin.Context, code int, message string, data any) {
 	if message == "" {
 		message = GetCodeMsg(code)
 	}
-	Result(c, http.StatusOK, code, message, data)
+
+	JsonResult(c, http.StatusOK, code, message, data)
 }

@@ -20,12 +20,22 @@ func main() {
 	utils.SetupDB()
 	//日志
 	utils.SetupLogger()
+	//redis
+	utils.SetupRedis()
 
+	defer utils.RDB.Close()
+
+	//应用配置
 	gin.SetMode(config.Server.Mode)
 	engine := gin.Default()
 
+	//应用中间件
 	engine.Use(middleware.CORS())
+	engine.Use(middleware.JWTAuthMiddleware())
+	engine.Use(middleware.RequestIdMiddleWare())
+	engine.Use(middleware.DecryptMiddleware())
 
+	//应用路由
 	routes.SetApiRoutes(engine)
 	routes.SetupTestRoutes(engine)
 

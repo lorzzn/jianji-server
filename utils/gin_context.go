@@ -23,7 +23,7 @@ func BindRequestParams[T any](c *gin.Context) {
 	err := c.ShouldBind(&params)
 	if err != nil {
 		Logger.Error("BindRequestParams", zap.Error(err))
-		r.Result(c, http.StatusOK, r.ERROR_BAD_PARAM, fmt.Sprint(err), nil)
+		r.JsonResult(c, http.StatusOK, r.ERROR_BAD_PARAM, fmt.Sprint(err), nil)
 		c.Abort()
 		return
 	}

@@ -10,12 +10,11 @@ import (
 func SetupUserRoutes(router *gin.RouterGroup) {
 	UserRouterGroup := router.Group("user")
 	{
-		UserRouterGroup.POST("/login")
 		UserRouterGroup.POST(
-			"/signup",
-			utils.BindRequestParams[request.Signup],
-			ValidateUser.Signup(),
-			UserApi.Signup,
+			"/login",
+			utils.BindRequestParams[request.Login],
+			ValidateUser.Login(),
+			UserApi.Login,
 		)
 		UserRouterGroup.GET("/profile")
 	}
