@@ -10,6 +10,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-redis/redis/v8"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -23,7 +24,15 @@ func main() {
 	//redis
 	utils.SetupRedis()
 
-	defer utils.RDB.Close()
+	//sessionManager
+	utils.SetupSessionManager()
+
+	defer func(RDB *redis.Client) {
+		err := RDB.Close()
+		if err != nil {
+			log.Panicln(err)
+		}
+	}(&utils.RDB)
 
 	//应用配置
 	gin.SetMode(config.Server.Mode)
@@ -31,6 +40,7 @@ func main() {
 
 	//应用中间件
 	engine.Use(middleware.CORS())
+	engine.Use(middleware.SessionMiddleware())
 	engine.Use(middleware.JWTAuthMiddleware())
 	engine.Use(middleware.RequestIdMiddleWare())
 	engine.Use(middleware.DecryptMiddleware())

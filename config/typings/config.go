@@ -33,6 +33,7 @@ type Zap struct {
 }
 
 type Redis struct {
+	Network  string
 	Addr     string // Redis 服务器地址
 	Password string // Redis 访问密码，如果没有设置密码则为空字符串
 	DB       int    // 选择使用的数据库，默认为0

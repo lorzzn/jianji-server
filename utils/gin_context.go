@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"memo-server/utils/r"
 	"net/http"
@@ -20,7 +21,13 @@ func GetRequestParams[T any](c *gin.Context) (params T, ok bool) {
 
 func BindRequestParams[T any](c *gin.Context) {
 	var params T
-	err := c.ShouldBind(&params)
+	var err error
+	decryptedData, ok := c.Get("DecryptedData")
+	if ok {
+		err = json.Unmarshal(decryptedData.([]byte), &params)
+	} else {
+		err = c.ShouldBind(&params)
+	}
 	if err != nil {
 		Logger.Error("BindRequestParams", zap.Error(err))
 		r.JsonResult(c, http.StatusOK, r.ERROR_BAD_PARAM, fmt.Sprint(err), nil)

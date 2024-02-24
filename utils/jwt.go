@@ -13,9 +13,8 @@ import (
 // 我们这里需要额外记录一个UserId字段，所以要自定义结构体
 // 如果想要保存更多信息，都可以添加到这个结构体中
 type MyClaims struct {
-	IsLoggedIn bool
-	UserId     any `json:"user_id"`
-	JwtId      any `json:"jwt_id"`
+	UserId any `json:"user_id"`
+	JwtId  any `json:"jwt_id"`
 	jwt.StandardClaims
 }
 
@@ -34,10 +33,9 @@ const AccessTokenExpireDuration = time.Hour * 24      // access_token 过期时�
 const RefreshTokenExpireDuration = time.Hour * 24 * 7 // refresh_token 过期时间
 
 // GenToken 生成JWT 生成 access_token 和 refresh_token
-func GenToken(isloggedin bool, userid any) (accessToken, refreshToken string, err error) {
+func GenToken(userid any) (accessToken, refreshToken string, err error) {
 	// 创建一个我们自己的声明
 	c := MyClaims{
-		isloggedin,
 		userid, // 自定义字段
 		uuid.New(),
 		jwt.StandardClaims{ // JWT规定的7个官方字段
@@ -86,7 +84,7 @@ func RefreshToken(accessToken, refreshToken string) (newAToken, newRToken string
 
 	// 当access token是过期错误 并且 refresh token没有过期时就创建一个新的access token
 	if v.Errors == jwt.ValidationErrorExpired {
-		return GenToken(claims.IsLoggedIn, claims.UserId)
+		return GenToken(claims.UserId)
 	}
 	return
 }

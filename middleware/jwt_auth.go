@@ -11,12 +11,10 @@ import (
 func JWTAuthMiddleware() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		authorization := c.Request.Header.Get("Authorization")
-		//如果请求没有Authorization，就在响应中添加
+		//如果请求没有Authorization, 游客状态
 		if authorization == "" {
-			accessToken, refreshToken, _ := utils.GenToken(false, nil)
-			authorization = "Bearer " + accessToken
-			c.Header("Authorization", authorization)
-			c.Header("Refresh-Token", refreshToken)
+			c.Next()
+			return
 		}
 		parts := strings.SplitN(authorization, " ", 2)
 
@@ -34,7 +32,6 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		}
 
 		// 储存 jwt 信息
-		c.Set("IsLoggedIn", mc.IsLoggedIn)
 		c.Set("UserId", mc.UserId)
 		c.Set("JwtId", mc.JwtId)
 
