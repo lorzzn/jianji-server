@@ -15,6 +15,6 @@
     ```
     
     ```postgresql
-    CREATE DATABASE jianji;
-    CREATE USER jianji WITH PASSWORD '333333';
+    CREATE DATABASE jianji OWNER jianji;
+    GRANT ALL PRIVILEGES ON DATABASE jianji TO jianji;
     ```

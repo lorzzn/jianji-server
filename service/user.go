@@ -16,8 +16,8 @@ type User struct{}
 
 func (*User) Login(c *gin.Context) (code int, message string, data *response.Login) {
 	params, _ := utils.GetRequestParams[request.Login](c)
-
 	user := getUserByEmail(params.Email)
+
 	if user.ID == 0 {
 		// 数据库中不存在用户就进行注册
 		code, message, data = signup(params)
@@ -30,8 +30,13 @@ func (*User) Login(c *gin.Context) (code int, message string, data *response.Log
 			IsNewUser: false,
 		}
 	} else {
-		// 用户密码验证失败，函数终止执行
+		// 用户密码验证失败
 		code = r.USER_PASSWORD_INCORRECT
+	}
+
+	// 如果存在错误，code就不会是r.OK
+	if code != r.OK {
+		data = nil
 		return
 	}
 
@@ -40,6 +45,7 @@ func (*User) Login(c *gin.Context) (code int, message string, data *response.Log
 	data.Token, data.RefreshToken, err = utils.GenToken(data.UserInfo.ID)
 	if err != nil {
 		code = r.JWT_AUTHORIZATION_FAILED
+		data = nil
 		return
 	}
 
@@ -52,7 +58,7 @@ func signup(params request.Login) (code int, message string, data *response.Logi
 
 	// 创建用户
 	user := &entity.User{
-		Name:  utils.GenerateRandomUserName(10),
+		Name:  utils.GenerateRandomUserName(8),
 		Email: params.Email,
 	}
 
