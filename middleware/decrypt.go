@@ -59,7 +59,7 @@ func DecryptMiddleware() func(c *gin.Context) {
 			return
 		}
 
-		c.Set("DecryptedData", data)
+		c.Set(utils.ContextDecryptedParams, data)
 		c.Next()
 		return
 	}
