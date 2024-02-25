@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"memo-server/utils"
 	"memo-server/utils/r"
 	"time"
@@ -18,7 +17,6 @@ func (*App) GetPublicKey(c *gin.Context) (code int, message string, data any) {
 		code = r.APP_CREATERSA_FAILED
 		return
 	}
-	fmt.Println(rsaPrivate)
 
 	//缓存私钥
 	err2 := utils.CachePrivateKeyPEM(c, rsaPrivate.String())
