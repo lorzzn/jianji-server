@@ -13,7 +13,7 @@ Postgres:
 
 Zap:
   Level: debug
-  Prefix: "[memo-server] "
+  Prefix: "[jianji-server] "
   Directory: "log"
   Format: "console"
   ShowLine: true

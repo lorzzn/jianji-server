@@ -2,8 +2,8 @@ package config
 
 import (
 	"flag"
+	"jianji-server/config/typings"
 	"log"
-	"memo-server/config/typings"
 	"strings"
 
 	"github.com/spf13/viper"

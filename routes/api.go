@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"memo-server/routes/common"
-	v1 "memo-server/routes/v1"
+	"jianji-server/routes/common"
+	v1 "jianji-server/routes/v1"
 
 	"github.com/gin-gonic/gin"
 )

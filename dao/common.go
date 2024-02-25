@@ -2,7 +2,7 @@ package dao
 
 import (
 	"errors"
-	"memo-server/utils"
+	"jianji-server/utils"
 
 	"gorm.io/gorm"
 )

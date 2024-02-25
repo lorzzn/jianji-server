@@ -1,4 +1,4 @@
-module memo-server
+module jianji-server
 
 go 1.21
 

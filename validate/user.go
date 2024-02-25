@@ -1,8 +1,8 @@
 package validate
 
 import (
-	"memo-server/model/request"
-	"memo-server/utils"
+	"jianji-server/model/request"
+	"jianji-server/utils"
 
 	"github.com/gin-gonic/gin"
 	validation "github.com/go-ozzo/ozzo-validation/v4"

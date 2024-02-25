@@ -1,6 +1,6 @@
 package v1
 
-import "memo-server/service"
+import "jianji-server/service"
 
 var (
 	UserService service.User

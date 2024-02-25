@@ -1,8 +1,8 @@
 package v1
 
 import (
-	"memo-server/model/request"
-	"memo-server/utils"
+	"jianji-server/model/request"
+	"jianji-server/utils"
 
 	"github.com/gin-gonic/gin"
 )

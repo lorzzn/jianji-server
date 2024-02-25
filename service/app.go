@@ -1,8 +1,8 @@
 package service
 
 import (
-	"memo-server/utils"
-	"memo-server/utils/r"
+	"jianji-server/utils"
+	"jianji-server/utils/r"
 	"time"
 
 	"github.com/gin-gonic/gin"

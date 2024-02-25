@@ -1,6 +1,6 @@
 package common
 
-import "memo-server/service"
+import "jianji-server/service"
 
 var (
 	AppService service.App

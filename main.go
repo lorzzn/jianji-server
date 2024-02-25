@@ -1,12 +1,12 @@
 package main
 
 import (
+	"jianji-server/config"
+	_ "jianji-server/config"
+	"jianji-server/middleware"
+	"jianji-server/routes"
+	"jianji-server/utils"
 	"log"
-	"memo-server/config"
-	_ "memo-server/config"
-	"memo-server/middleware"
-	"memo-server/routes"
-	"memo-server/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

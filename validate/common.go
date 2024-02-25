@@ -2,7 +2,7 @@ package validate
 
 import (
 	"fmt"
-	"memo-server/utils/r"
+	"jianji-server/utils/r"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

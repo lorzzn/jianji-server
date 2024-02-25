@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"memo-server/utils"
-	"memo-server/utils/r"
+	"jianji-server/utils"
+	"jianji-server/utils/r"
 	"strings"
 
 	"github.com/gin-gonic/gin"

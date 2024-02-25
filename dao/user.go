@@ -1,8 +1,8 @@
 package dao
 
 import (
-	"memo-server/model/response"
-	"memo-server/utils"
+	"jianji-server/model/response"
+	"jianji-server/utils"
 )
 
 type User struct{}

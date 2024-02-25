@@ -3,7 +3,7 @@ package utils
 import (
 	"encoding/json"
 	"errors"
-	"memo-server/utils/r"
+	"jianji-server/utils/r"
 
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"

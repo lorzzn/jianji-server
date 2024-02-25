@@ -2,9 +2,9 @@ package utils
 
 import (
 	"fmt"
+	"jianji-server/config"
+	"jianji-server/entity"
 	"log"
-	"memo-server/config"
-	"memo-server/entity"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

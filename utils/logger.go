@@ -1,8 +1,8 @@
 package utils
 
 import (
+	"jianji-server/config"
 	"log"
-	"memo-server/config"
 	"os"
 	"time"
 

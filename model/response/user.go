@@ -1,6 +1,6 @@
 package response
 
-import "memo-server/entity"
+import "jianji-server/entity"
 
 type User struct {
 	entity.User

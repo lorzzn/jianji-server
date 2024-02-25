@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"memo-server/config"
+	"jianji-server/config"
 
 	"github.com/go-redis/redis/v8"
 	"golang.org/x/net/context"

@@ -1,6 +1,6 @@
 package common
 
-import "memo-server/api/common"
+import "jianji-server/api/common"
 
 var (
 	AppApi common.App

@@ -17,5 +17,5 @@ func GenerateRandomString(length int) string {
 }
 
 func GenerateRandomUserName(length int) string {
-	return "memo_" + GenerateRandomString(10)
+	return "jianji_" + GenerateRandomString(10)
 }

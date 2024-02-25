@@ -1,6 +1,6 @@
 package v1
 
-import "memo-server/validate"
+import "jianji-server/validate"
 
 var (
 	ValidateUser validate.User

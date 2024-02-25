@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"encoding/json"
-	"memo-server/model/request"
-	"memo-server/utils"
-	"memo-server/utils/r"
+	"jianji-server/model/request"
+	"jianji-server/utils"
+	"jianji-server/utils/r"
 
 	"github.com/gin-gonic/gin"
 )

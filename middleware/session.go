@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"memo-server/utils"
+	"jianji-server/utils"
 
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"

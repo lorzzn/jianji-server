@@ -1,12 +1,12 @@
 package service
 
 import (
-	"memo-server/dao"
-	"memo-server/entity"
-	"memo-server/model/request"
-	"memo-server/model/response"
-	"memo-server/utils"
-	"memo-server/utils/r"
+	"jianji-server/dao"
+	"jianji-server/entity"
+	"jianji-server/model/request"
+	"jianji-server/model/response"
+	"jianji-server/utils"
+	"jianji-server/utils/r"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
