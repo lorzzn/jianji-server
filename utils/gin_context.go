@@ -9,8 +9,11 @@ import (
 	"go.uber.org/zap"
 )
 
-const ContextRequestParams = "RequestParams"
-const ContextDecryptedParams = "DecryptedParams"
+// 声明context key
+const (
+	ContextRequestParams   = "RequestParams"
+	ContextDecryptedParams = "DecryptedParams"
+)
 
 func GetRequestParams[T any](c *gin.Context) (params T, ok bool) {
 	var value any

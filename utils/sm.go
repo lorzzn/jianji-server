@@ -9,6 +9,11 @@ import (
 
 var SessionStore sessions.RedisStore
 
+// 声明session key
+const (
+	SessionPrivateKeyPEM = "privateKeyPEM"
+)
+
 func SetupSessionManager() {
 	store, err := sessions.NewRedisStore(
 		10,

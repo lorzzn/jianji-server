@@ -94,14 +94,14 @@ func RSADecryptData(privateKey string, encryptedData string) ([]byte, error) {
 // CachePrivateKeyPEM 将私钥根据jwt保存到session
 func CachePrivateKeyPEM(c *gin.Context, privateKeyPEM string) error {
 	session := sessions.Default(c)
-	session.Set("privateKeyPEM", privateKeyPEM)
+	session.Set(SessionPrivateKeyPEM, privateKeyPEM)
 	return session.Save()
 }
 
 // GetCachedPrivateKeyPEM 根据jwt获取私钥
 func GetCachedPrivateKeyPEM(c *gin.Context) (string, bool) {
 	session := sessions.Default(c)
-	value := session.Get("privateKeyPEM")
+	value := session.Get(SessionPrivateKeyPEM)
 	if value == nil {
 		return "", false
 	} else {
