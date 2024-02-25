@@ -7,5 +7,8 @@ type User struct {
 }
 
 type Login struct {
-	UserInfo entity.User
+	UserInfo     entity.User
+	IsNewUser    bool
+	Token        string
+	RefreshToken string
 }
