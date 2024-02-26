@@ -58,8 +58,9 @@ func signup(params request.Login) (code int, message string, data *response.Logi
 
 	// 创建用户
 	user := &entity.User{
-		Name:  utils.GenerateRandomUserName(8),
-		Email: params.Email,
+		Name:   utils.GenerateRandomUserName(8),
+		Avatar: utils.GetCravatarURL(params.Email),
+		Email:  params.Email,
 	}
 
 	// 数据库报错
