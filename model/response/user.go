@@ -12,3 +12,8 @@ type Login struct {
 	Token        string
 	RefreshToken string
 }
+
+type RefreshToken struct {
+	Token        string
+	RefreshToken string
+}

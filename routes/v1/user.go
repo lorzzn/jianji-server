@@ -16,6 +16,12 @@ func SetupUserRoutes(router *gin.RouterGroup) {
 			ValidateUser.Login(),
 			UserApi.Login,
 		)
+		UserRouterGroup.POST(
+			"/refresh-token",
+			utils.BindRequestParams[request.RefreshToken],
+			ValidateUser.RefreshToken(),
+			UserApi.RefreshToken,
+		)
 		UserRouterGroup.GET("/profile")
 	}
 

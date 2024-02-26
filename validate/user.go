@@ -24,3 +24,17 @@ func (*User) Login() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func (*User) RefreshToken() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		params, _ := utils.GetRequestParams[request.RefreshToken](c)
+		if err := StructValidate(c, &params,
+			validation.Field(&params.Token, validation.Required),
+			validation.Field(&params.RefreshToken, validation.Required),
+		); err != nil {
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}

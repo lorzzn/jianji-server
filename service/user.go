@@ -14,6 +14,26 @@ import (
 
 type User struct{}
 
+func (*User) RefreshToken(c *gin.Context) (code int, message string, data *response.RefreshToken) {
+	params, _ := utils.GetRequestParams[request.RefreshToken](c)
+	token := params.Token
+
+	var err error
+	var refreshToken string
+	token, refreshToken, err = utils.RefreshToken(token, params.RefreshToken)
+	if err != nil {
+		code = r.USER_REFRESHTOKEN_FAILED
+		return
+	}
+
+	data = &response.RefreshToken{
+		Token:        token,
+		RefreshToken: refreshToken,
+	}
+
+	return
+}
+
 func (*User) Login(c *gin.Context) (code int, message string, data *response.Login) {
 	params, _ := utils.GetRequestParams[request.Login](c)
 	user := getUserByEmail(params.Email)
@@ -42,7 +62,7 @@ func (*User) Login(c *gin.Context) (code int, message string, data *response.Log
 
 	// 登录成功和注册成功都要返回生成的 jwt token
 	var err error
-	data.Token, data.RefreshToken, err = utils.GenToken(data.UserInfo.ID)
+	data.Token, data.RefreshToken, err = utils.GenToken(data.UserInfo.ID, data.UserInfo.UUID)
 	if err != nil {
 		code = r.JWT_AUTHORIZATION_FAILED
 		data = nil

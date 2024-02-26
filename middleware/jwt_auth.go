@@ -33,7 +33,9 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 
 		// 储存 jwt 信息
 		c.Set("UserId", mc.UserId)
-		c.Set("JwtId", mc.JwtId)
+		c.Set("UserUUID", mc.UserUUID)
+		c.Set("JwtUUID", mc.JwtUUID)
+		c.Set("Token", parts[1])
 
 		//后续的处理函数可以通过 c.Get("..") 来获取
 		c.Next()

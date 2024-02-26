@@ -23,8 +23,10 @@ const (
 	APP_GETRSA_FAILED    = 20003
 
 	//用户接口错误
-	USER_EXISTED            = 10001
-	USER_PASSWORD_INCORRECT = 10002
+	USER_EXISTED             = 10001
+	USER_PASSWORD_INCORRECT  = 10002
+	USER_NOT_LOGIN           = 10003
+	USER_REFRESHTOKEN_FAILED = 10004
 )
 
 var codeMsg = map[int]string{
@@ -48,8 +50,10 @@ var codeMsg = map[int]string{
 	APP_GETRSA_FAILED:    "获取授权密钥出错",
 
 	//用户接口错误
-	USER_EXISTED:            "用户已注册，请直接登录",
-	USER_PASSWORD_INCORRECT: "登录密码错误",
+	USER_EXISTED:             "用户已注册，请直接登录",
+	USER_PASSWORD_INCORRECT:  "登录密码错误",
+	USER_NOT_LOGIN:           "用户未登录",
+	USER_REFRESHTOKEN_FAILED: "重新授权失败",
 }
 
 func GetCodeMsg(code int) string {
