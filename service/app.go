@@ -32,7 +32,7 @@ func (*App) GetPublicKey(c *gin.Context) (code int, message string, data any) {
 	return
 }
 
-func (*App) GetAppInfo(c *gin.Context) (code int, message string, data any) {
+func (*App) GetAppConfig() (code int, message string, data any) {
 	data = gin.H{
 		"time": time.Now().UnixNano(),
 	}
