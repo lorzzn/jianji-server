@@ -1,4 +1,4 @@
-package typings
+package types
 
 type Config struct {
 	Server   Server

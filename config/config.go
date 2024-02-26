@@ -2,7 +2,7 @@ package config
 
 import (
 	"flag"
-	"jianji-server/config/typings"
+	"jianji-server/config/types"
 	"log"
 	"strings"
 
@@ -12,10 +12,10 @@ import (
 const DefaultConfigFile string = "config.yml"
 
 var (
-	Server   typings.Server
-	Postgres typings.Postgres
-	Zap      typings.Zap
-	Redis    typings.Redis
+	Server   types.Server
+	Postgres types.Postgres
+	Zap      types.Zap
+	Redis    types.Redis
 )
 
 func init() {
