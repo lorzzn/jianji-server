@@ -8,11 +8,32 @@ import (
 	"jianji-server/utils"
 	"jianji-server/utils/r"
 
+	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
 type User struct{}
+
+func (*User) GetProfile(c *gin.Context) (code int, message string, data *response.Profile) {
+	userId, ok := c.Get("UserId")
+	if !ok {
+		code = r.USER_NOT_EXISTED
+		return
+	}
+
+	i, err := conv.Int(userId)
+	if err != nil {
+		code = r.FAIL
+		message = "系统方式错误"
+		return
+	}
+	data = &response.Profile{
+		UserInfo: dao.UserDao.GetUserById(i),
+	}
+
+	return
+}
 
 func (*User) RefreshToken(c *gin.Context) (code int, message string, data *response.RefreshToken) {
 	params, _ := utils.GetRequestParams[request.RefreshToken](c)

@@ -2,8 +2,8 @@ package response
 
 import "jianji-server/entity"
 
-type User struct {
-	entity.User
+type Profile struct {
+	UserInfo entity.User
 }
 
 type Login struct {

@@ -17,3 +17,8 @@ func (*User) RefreshToken(c *gin.Context) {
 	var code, message, data = UserService.RefreshToken(c)
 	r.OkJsonResult(c, code, message, data)
 }
+
+func (*User) GetProfile(c *gin.Context) {
+	var code, message, data = UserService.GetProfile(c)
+	r.OkJsonResult(c, code, message, data)
+}

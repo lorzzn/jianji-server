@@ -22,7 +22,10 @@ func SetupUserRoutes(router *gin.RouterGroup) {
 			ValidateUser.RefreshToken(),
 			UserApi.RefreshToken,
 		)
-		UserRouterGroup.GET("/profile")
+		UserRouterGroup.POST(
+			"/profile",
+			UserApi.GetProfile,
+		)
 	}
 
 }

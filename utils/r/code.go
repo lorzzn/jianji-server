@@ -27,6 +27,7 @@ const (
 	USER_PASSWORD_INCORRECT  = 10002
 	USER_NOT_LOGIN           = 10003
 	USER_REFRESHTOKEN_FAILED = 10004
+	USER_NOT_EXISTED         = 10005
 )
 
 var codeMsg = map[int]string{
@@ -54,6 +55,7 @@ var codeMsg = map[int]string{
 	USER_PASSWORD_INCORRECT:  "登录密码错误",
 	USER_NOT_LOGIN:           "用户未登录",
 	USER_REFRESHTOKEN_FAILED: "重新授权失败",
+	USER_NOT_EXISTED:         "用户不存在",
 }
 
 func GetCodeMsg(code int) string {
