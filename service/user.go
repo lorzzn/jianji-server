@@ -11,9 +11,33 @@ import (
 	"github.com/cstockton/go-conv"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/mitchellh/mapstructure"
 )
 
 type User struct{}
+
+func (*User) EditProfile(c *gin.Context) (code int, message string, data *response.Profile) {
+	userId, ok := c.Get("UserId")
+	if !ok {
+		code = r.USER_NOT_EXISTED
+		return
+	}
+
+	params, _ := utils.GetRequestParams[request.EditProfile](c)
+
+	updated := &request.EditProfile{
+		Name: params.Name,
+	}
+
+	var e entity.User
+	mapstructure.Decode(updated, &e)
+	i, _ := conv.Int(userId)
+	data = &response.Profile{
+		UserInfo: dao.UserDao.UpdateUserById(i, e),
+	}
+
+	return
+}
 
 func (*User) GetProfile(c *gin.Context) (code int, message string, data *response.Profile) {
 	userId, ok := c.Get("UserId")
@@ -22,12 +46,7 @@ func (*User) GetProfile(c *gin.Context) (code int, message string, data *respons
 		return
 	}
 
-	i, err := conv.Int(userId)
-	if err != nil {
-		code = r.FAIL
-		message = "系统方式错误"
-		return
-	}
+	i, _ := conv.Int(userId)
 	data = &response.Profile{
 		UserInfo: dao.UserDao.GetUserById(i),
 	}

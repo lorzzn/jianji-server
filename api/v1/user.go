@@ -22,3 +22,8 @@ func (*User) GetProfile(c *gin.Context) {
 	var code, message, data = UserService.GetProfile(c)
 	r.OkJsonResult(c, code, message, data)
 }
+
+func (*User) EditProfile(c *gin.Context) {
+	var code, message, data = UserService.EditProfile(c)
+	r.OkJsonResult(c, code, message, data)
+}

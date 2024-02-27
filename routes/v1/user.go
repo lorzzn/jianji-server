@@ -26,6 +26,12 @@ func SetupUserRoutes(router *gin.RouterGroup) {
 			"/profile",
 			UserApi.GetProfile,
 		)
+		UserRouterGroup.POST(
+			"/edit-profile",
+			utils.BindRequestParams[request.EditProfile],
+			ValidateUser.EditProfile(),
+			UserApi.EditProfile,
+		)
 	}
 
 }

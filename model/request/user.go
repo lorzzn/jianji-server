@@ -9,3 +9,7 @@ type RefreshToken struct {
 	Token        string `json:"token" form:"token"`
 	RefreshToken string `json:"refreshToken" form:"refreshToken"`
 }
+
+type EditProfile struct {
+	Name string `json:"name" form:"name"`
+}
