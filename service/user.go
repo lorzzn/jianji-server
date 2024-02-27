@@ -30,8 +30,8 @@ func (*User) EditProfile(c *gin.Context) (code int, message string, data *respon
 	}
 
 	var e entity.User
-	mapstructure.Decode(updated, &e)
-	i, _ := conv.Int(userId)
+	_ = mapstructure.Decode(updated, &e)
+	i, _ := conv.Uint64(userId)
 	data = &response.Profile{
 		UserInfo: dao.UserDao.UpdateUserById(i, e),
 	}
@@ -46,7 +46,7 @@ func (*User) GetProfile(c *gin.Context) (code int, message string, data *respons
 		return
 	}
 
-	i, _ := conv.Int(userId)
+	i, _ := conv.Uint64(userId)
 	data = &response.Profile{
 		UserInfo: dao.UserDao.GetUserById(i),
 	}
@@ -70,6 +70,21 @@ func (*User) RefreshToken(c *gin.Context) (code int, message string, data *respo
 		Token:        token,
 		RefreshToken: refreshToken,
 	}
+
+	return
+}
+
+func (*User) Logout(c *gin.Context) (code int, message string) {
+	jwtUUID, ok := c.Get("JwtUUID")
+	if !ok {
+		code = r.USER_NOT_LOGIN
+		return
+	}
+
+	_ = utils.AddJWTToBlacklist(jwtUUID.(string))
+
+	code = r.OK
+	message = " 退出登录成功"
 
 	return
 }

@@ -3,6 +3,7 @@ package middleware
 import (
 	"jianji-server/utils"
 	"jianji-server/utils/r"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -18,12 +19,15 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		}
 		parts := strings.SplitN(authorization, " ", 2)
 
+		//验证token格式
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
 			r.OkJsonResult(c, r.JWT_BAD_AUTHORIZATION, "", nil)
 			//阻止调用后续的函数
 			c.Abort()
 			return
 		}
+
+		//获取jwt信息
 		mc, err := utils.ParseToken(parts[1])
 		if err != nil {
 			r.OkJsonResult(c, r.JWT_AUTHORIZATION_INVALID, "", nil)
@@ -31,10 +35,24 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 			return
 		}
 
+		//检查jwt是否已拉黑（退出登录...）
+		blacklisted, err2 := utils.CheckJWTIsBlacklisted(mc.JwtUUID.String())
+		if err2 != nil {
+			r.OkJsonResult(c, r.FAIL, "", nil)
+			c.Abort()
+			return
+		}
+
+		if blacklisted {
+			r.OkJsonResult(c, r.USER_NOT_LOGIN, "", nil)
+			c.Abort()
+			return
+		}
+
 		// 储存 jwt 信息
-		c.Set("UserId", mc.UserId)
-		c.Set("UserUUID", mc.UserUUID)
-		c.Set("JwtUUID", mc.JwtUUID)
+		c.Set("UserId", strconv.FormatUint(mc.UserId, 10))
+		c.Set("UserUUID", mc.UserUUID.String())
+		c.Set("JwtUUID", mc.JwtUUID.String())
 		c.Set("Token", parts[1])
 
 		//后续的处理函数可以通过 c.Get("..") 来获取

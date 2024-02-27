@@ -13,6 +13,11 @@ func (*User) Login(c *gin.Context) {
 	r.OkJsonResult(c, code, message, data)
 }
 
+func (*User) Logout(c *gin.Context) {
+	var code, message = UserService.Logout(c)
+	r.OkJsonResult(c, code, message, nil)
+}
+
 func (*User) RefreshToken(c *gin.Context) {
 	var code, message, data = UserService.RefreshToken(c)
 	r.OkJsonResult(c, code, message, data)

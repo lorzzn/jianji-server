@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -13,15 +14,18 @@ import (
 // 我们这里需要额外记录一个UserId字段，所以要自定义结构体
 // 如果想要保存更多信息，都可以添加到这个结构体中
 type CustomClaims struct {
-	UserId   any `json:"user_id"`
-	UserUUID any `json:"user_uuid"`
-	JwtUUID  any `json:"jwt_id"`
+	UserId   uint64    `json:"user_id"`
+	UserUUID uuid.UUID `json:"user_uuid"`
+	JwtUUID  uuid.UUID `json:"jwt_id"`
 	jwt.StandardClaims
 }
 
 var (
 	// 定义Secret 用于加密的字符串
 	jwtSecret = []byte("note car ball blue cat line")
+
+	// 拉黑的 jwt 在 redis 里的集合
+	blacklistKey = "jwt_blacklist"
 
 	// AccessTokenExpireDuration 定义Token的过期时间
 	AccessTokenExpireDuration = time.Hour * 24 // access_token 过期时间
@@ -34,7 +38,7 @@ func keyFunc(_ *jwt.Token) (i interface{}, err error) {
 }
 
 // GenToken 生成JWT 生成 access_token 和 refresh_token
-func GenToken(userid any, userUUID any) (accessToken, refreshToken string, err error) {
+func GenToken(userid uint64, userUUID uuid.UUID) (accessToken, refreshToken string, err error) {
 	// 创建一个我们自己的声明
 	c := CustomClaims{
 		userid, // 自定义字段
@@ -86,6 +90,17 @@ func RefreshToken(accessToken, refreshToken string) (newAccessToken, newRefreshT
 	var claims CustomClaims
 	_, err = jwt.ParseWithClaims(accessToken, &claims, keyFunc)
 
+	//检查token是否已经拉黑
+	blacklisted, err := CheckJWTIsBlacklisted(claims.JwtUUID.String())
+	if err != nil {
+		return
+	}
+
+	if blacklisted {
+		err = errors.New("登录已失效")
+		return
+	}
+
 	// 当access token是过期错误 并且 refresh token没有过期时就创建一个新的access token
 	var v *jwt.ValidationError
 	var ok = errors.As(err, &v)
@@ -94,4 +109,15 @@ func RefreshToken(accessToken, refreshToken string) (newAccessToken, newRefreshT
 	}
 
 	return
+}
+
+// AddJWTToBlacklist 模拟将令牌加入黑名单
+func AddJWTToBlacklist(jwtUUID string) error {
+	return RDB.Set(RedisGlobalContext, fmt.Sprintf("%s:%s", blacklistKey, jwtUUID), 1, AccessTokenExpireDuration).Err()
+}
+
+// CheckJWTIsBlacklisted 检查令牌是否在黑名单中
+func CheckJWTIsBlacklisted(jwtUUID string) (bool, error) {
+	result, err := RDB.Exists(RedisGlobalContext, fmt.Sprintf("%s:%s", blacklistKey, jwtUUID)).Result()
+	return result == 1, err
 }
