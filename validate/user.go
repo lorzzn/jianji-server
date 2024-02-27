@@ -43,7 +43,7 @@ func (*User) EditProfile() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		params, _ := utils.GetRequestParams[request.EditProfile](c)
 		if err := StructValidate(c, &params,
-			validation.Field(&params.Name, validation.Required, validation.Max(16)),
+			validation.Field(&params.Name, validation.Required, validation.Length(1, 16)),
 		); err != nil {
 			c.Abort()
 			return
