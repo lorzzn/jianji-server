@@ -8,7 +8,6 @@ type Profile struct {
 
 type Login struct {
 	UserInfo     entity.User
-	IsNewUser    bool
 	Token        string
 	RefreshToken string
 }

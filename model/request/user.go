@@ -5,6 +5,13 @@ type Login struct {
 	Password string `json:"password" form:"password"`
 }
 
+type Signup = Login
+
+type Active struct {
+	Email string `json:"email" form:"email"`
+	State string `json:"state" form:"state"`
+}
+
 type RefreshToken struct {
 	Token        string `json:"token" form:"token"`
 	RefreshToken string `json:"refreshToken" form:"refreshToken"`

@@ -1,17 +1,16 @@
 package service
 
 import (
+	"github.com/cstockton/go-conv"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/mitchellh/mapstructure"
 	"jianji-server/dao"
 	"jianji-server/entity"
 	"jianji-server/model/request"
 	"jianji-server/model/response"
 	"jianji-server/utils"
 	"jianji-server/utils/r"
-
-	"github.com/cstockton/go-conv"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/mitchellh/mapstructure"
 )
 
 type User struct{}
@@ -94,15 +93,16 @@ func (*User) Login(c *gin.Context) (code int, message string, data *response.Log
 	user := getUserByEmail(params.Email)
 
 	if user.ID == 0 {
-		// 数据库中不存在用户就进行注册
-		code, message, data = signup(params)
+		// 数据库中不存在用户就进行注册, 下一个handler为Signup
+		c.Set("NeedSignup", true)
+		c.Next()
+		return
 	} else if password := getPasswordByUserUUID(user.UUID); password.ID != 0 && utils.CheckPassword(password.Password, params.Password) {
 		// 用户密码验证成功
 		code = r.OK
 		message = "登录成功"
 		data = &response.Login{
-			UserInfo:  user,
-			IsNewUser: false,
+			UserInfo: user,
 		}
 	} else {
 		// 用户密码验证失败
@@ -127,19 +127,27 @@ func (*User) Login(c *gin.Context) (code int, message string, data *response.Log
 	return
 }
 
-func signup(params request.Login) (code int, message string, data *response.Login) {
+func (*User) Active(c *gin.Context) (code int, message string, data *response.Login) {
+	params, _ := utils.GetRequestParams[request.Active](c)
+	email, password, err := utils.GetActiveEmailStateInfo(params.Email, params.State)
+	if err != nil {
+		code = 500
+		message = "链接错误"
+		return
+	}
+
 	// 开始事务
 	tx := utils.DB.Begin()
 
 	// 创建用户
 	user := &entity.User{
 		Name:   utils.GenerateRandomUserName(8),
-		Avatar: utils.GetCravatarURL(params.Email),
-		Email:  params.Email,
+		Avatar: utils.GetCravatarURL(email),
+		Email:  email,
 	}
 
 	// 数据库报错
-	err := tx.Create(&user).Error
+	err = tx.Create(&user).Error
 	if err != nil {
 		tx.Rollback()
 		code = r.ERROR_DB_OPE
@@ -147,21 +155,12 @@ func signup(params request.Login) (code int, message string, data *response.Logi
 		return
 	}
 
-	// 生成加盐并且哈希处理后的密码
-	gpw, err2 := utils.GeneratePassword(params.Password)
-	if err2 != nil {
-		tx.Rollback()
-		code = r.FAIL
-		data = nil
-		return
-	}
-
-	// 创建密码
-	password := &entity.UserPassword{
+	// 创建密码记录
+	pw := &entity.UserPassword{
 		UserUUID: user.UUID,
-		Password: string(gpw),
+		Password: password,
 	}
-	err3 := tx.Create(&password).Error
+	err3 := tx.Create(&pw).Error
 	// 数据库报错
 	if err3 != nil {
 		tx.Rollback()
@@ -176,9 +175,38 @@ func signup(params request.Login) (code int, message string, data *response.Logi
 	code = r.OK
 	message = "注册成功"
 	data = &response.Login{
-		UserInfo:  *user,
-		IsNewUser: true,
+		UserInfo: *user,
 	}
+
+	return
+}
+
+func (*User) Signup(c *gin.Context) (code int, message string, data *response.Login) {
+	params, _ := utils.GetRequestParams[request.Signup](c)
+	if user := getUserByEmail(params.Email); user.ID != 0 {
+		code = r.USER_EXISTED
+		return
+	}
+
+	// 生成加盐并且哈希处理后的密码
+	gpw, err := utils.GeneratePassword(params.Password)
+	if err != nil {
+		code = r.FAIL
+		data = nil
+		return
+	}
+
+	err = utils.SendActiveEmail(params.Email, string(gpw))
+	if err != nil {
+		code = 500
+		message = "激活链接邮件发送失败"
+		return
+	}
+
+	data = &response.Login{
+		UserInfo: entity.User{Status: 0},
+	}
+	message = "need signup"
 
 	return
 }

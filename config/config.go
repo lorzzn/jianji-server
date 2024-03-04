@@ -16,6 +16,7 @@ var (
 	Postgres types.Postgres
 	Zap      types.Zap
 	Redis    types.Redis
+	Email    types.Email
 )
 
 func init() {
@@ -47,6 +48,7 @@ func init() {
 		"Postgres": &Postgres,
 		"Zap":      &Zap,
 		"Redis":    &Redis,
+		"Email":    &Email,
 	}
 
 	for key, val := range configMap {

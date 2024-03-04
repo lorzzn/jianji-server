@@ -15,10 +15,23 @@ func SetupUserRoutes(router *gin.RouterGroup) {
 			utils.BindRequestParams[request.Login],
 			ValidateUser.Login(),
 			UserApi.Login,
+			UserApi.Signup,
+		)
+		UserRouterGroup.POST(
+			"/signup",
+			utils.BindRequestParams[request.Signup],
+			ValidateUser.Signup(),
+			UserApi.Signup,
 		)
 		UserRouterGroup.POST(
 			"/logout",
 			UserApi.Logout,
+		)
+		UserRouterGroup.POST(
+			"/active",
+			utils.BindRequestParams[request.Active],
+			ValidateUser.Active(),
+			UserApi.Active,
 		)
 		UserRouterGroup.POST(
 			"/refresh-token",

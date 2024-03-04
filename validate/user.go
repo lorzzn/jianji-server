@@ -25,6 +25,23 @@ func (*User) Login() gin.HandlerFunc {
 	}
 }
 
+func (user *User) Signup() gin.HandlerFunc {
+	return user.Login()
+}
+
+func (*User) Active() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		params, _ := utils.GetRequestParams[request.Active](c)
+		if err := StructValidate(c, &params,
+			validation.Field(&params.State, validation.Required),
+		); err != nil {
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}
+
 func (*User) RefreshToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		params, _ := utils.GetRequestParams[request.RefreshToken](c)

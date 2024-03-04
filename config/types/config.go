@@ -1,13 +1,9 @@
 package types
 
-type Config struct {
-	Server   Server
-	Postgres Postgres
-}
-
 type Server struct {
-	Port string
-	Mode string
+	WebDomain string
+	Port      string
+	Mode      string
 }
 
 type Postgres struct {
@@ -37,4 +33,12 @@ type Redis struct {
 	Addr     string // Redis 服务器地址
 	Password string // Redis 访问密码，如果没有设置密码则为空字符串
 	DB       int    // 选择使用的数据库，默认为0
+}
+
+type Email struct {
+	SMTPServer     string
+	SMTPPort       int
+	From           string
+	Password       string
+	DefaultSubject string
 }
