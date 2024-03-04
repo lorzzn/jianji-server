@@ -140,12 +140,23 @@ func SendActiveEmail(email string, password string) error {
 
 // GetActiveEmailStateInfo 根据激活链接拿到用户注册信息
 func GetActiveEmailStateInfo(email string, state string) (string, string, error) {
-	key := fmt.Sprintf("email_active:%s", email)
-	var data EmailActiveData
+	key := GetWaitingActivationEmailKey(email)
 
 	// 无效激活链接情况
-	if err := RDB.Get(RedisGlobalContext, key).Scan(&data); err != nil {
-		return "", "", errors.New("激活链接无效")
+	value, err := RDB.Get(RedisGlobalContext, key).Result()
+	if err != nil {
+		return "", "", errors.New("无效的激活链接")
+	}
+
+	// 获取后删掉redis中的state数据
+	err = RDB.Del(RedisGlobalContext, key).Err()
+	if err != nil {
+		return "", "", errors.New("系统发生错误")
+	}
+
+	var data EmailActiveData
+	if err = json.Unmarshal([]byte(value), &data); err != nil {
+		return "", "", errors.New("系统发生错误")
 	}
 
 	// 用户重新获取激活链接的情况

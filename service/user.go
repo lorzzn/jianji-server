@@ -132,7 +132,7 @@ func (*User) Active(c *gin.Context) (code int, message string, data *response.Lo
 	email, password, err := utils.GetActiveEmailStateInfo(params.Email, params.State)
 	if err != nil {
 		code = 500
-		message = "链接错误"
+		message = err.Error()
 		return
 	}
 
@@ -176,6 +176,14 @@ func (*User) Active(c *gin.Context) (code int, message string, data *response.Lo
 	message = "注册成功"
 	data = &response.Login{
 		UserInfo: *user,
+	}
+
+	// 激活成功要返回生成的 jwt token
+	data.Token, data.RefreshToken, err = utils.GenToken(data.UserInfo.ID, data.UserInfo.UUID)
+	if err != nil {
+		code = r.JWT_AUTHORIZATION_FAILED
+		data = nil
+		return
 	}
 
 	return
