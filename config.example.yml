@@ -18,3 +18,9 @@ Zap:
   Format: "console"
   ShowLine: true
   LogInConsole: true
+
+Redis:
+  Network: tcp
+  Addr: localhost:6379
+  Password: ""
+  DB: 1
