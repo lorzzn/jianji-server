@@ -32,9 +32,18 @@ func (*App) GetPublicKey(c *gin.Context) (code int, message string, data any) {
 	return
 }
 
-func (*App) GetAppConfig() (code int, message string, data any) {
+func (*App) GetAppConfig(c *gin.Context) (code int, message string, data any) {
+	record, err := utils.ClientPublicIP(c)
+	location := gin.H{}
+	if err == nil {
+		location = gin.H{
+			"country": record.Country.Names["en"],
+			"city":    record.City.Names["en"],
+		}
+	}
 	data = gin.H{
-		"time": time.Now().UnixNano(),
+		"time":     time.Now().UnixNano(),
+		"location": location,
 	}
 	code = r.OK
 	return

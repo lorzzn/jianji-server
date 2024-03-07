@@ -17,6 +17,7 @@ var (
 	Zap      types.Zap
 	Redis    types.Redis
 	Email    types.Email
+	MaxMind  types.MaxMind
 )
 
 func init() {
@@ -49,6 +50,7 @@ func init() {
 		"Zap":      &Zap,
 		"Redis":    &Redis,
 		"Email":    &Email,
+		"MaxMind":  &MaxMind,
 	}
 
 	for key, val := range configMap {

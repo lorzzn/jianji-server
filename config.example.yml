@@ -24,3 +24,6 @@ Redis:
   Addr: localhost:6379
   Password: ""
   DB: 1
+
+MaxMind:
+  LicenseKey: ""

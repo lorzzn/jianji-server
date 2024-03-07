@@ -15,6 +15,6 @@ func (*App) GetPublicKey(c *gin.Context) {
 }
 
 func (*App) GetAppConfig(c *gin.Context) {
-	var code, message, data = AppService.GetAppConfig()
+	var code, message, data = AppService.GetAppConfig(c)
 	r.OkJsonResult(c, code, message, data)
 }

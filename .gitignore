@@ -7,3 +7,5 @@ log/*
 
 config.yml
 
+sources/GeoLite2-City.mmdb
+sources/geoip_download

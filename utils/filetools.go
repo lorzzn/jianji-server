@@ -21,3 +21,8 @@ func PathExists(path string) (bool, error) {
 	// 不是文件夹, 则存在同名文件
 	return false, errors.New("存在同名文件")
 }
+
+func FileExists(path string) bool {
+	_, err := os.Stat(path)
+	return !errors.Is(err, os.ErrNotExist)
+}

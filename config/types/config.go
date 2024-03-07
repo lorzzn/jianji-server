@@ -42,3 +42,7 @@ type Email struct {
 	Password       string
 	DefaultSubject string
 }
+
+type MaxMind struct {
+	LicenseKey string
+}
