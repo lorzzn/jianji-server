@@ -7,14 +7,23 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/oschwald/geoip2-golang"
+	"golang.org/x/net/context"
 	"resenje.org/mmdb"
 )
 
+var (
+	mmdbPath = "sources/GeoLite2-City.mmdb"
+	ctx      = context.Background()
+)
+
+func SetupMmdb() bool {
+	success, _ := mmdb.UpdateGeoLite2City(ctx, mmdbPath, config.MaxMind.LicenseKey)
+	return success
+}
+
 func ClientPublicIP(c *gin.Context) (*geoip2.City, error) {
-	mmdbPath := "sources/GeoLite2-City.mmdb"
-	mmdb.UpdateGeoLite2City(c, mmdbPath, config.MaxMind.LicenseKey)
 	if FileExists(mmdbPath) {
-		return nil, errors.New("GeoLite2-City.mmdb 下载失败")
+		return nil, errors.New("GeoLite2-City.mmdb 不存在")
 	}
 	geoDb, err := geoip2.Open("sources/GeoLite2-City.mmdb")
 	if err != nil {

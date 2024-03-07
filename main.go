@@ -17,6 +17,7 @@ import (
 var g errgroup.Group
 
 func main() {
+	utils.SetupMmdb()
 	//初始化数据库
 	utils.SetupDB()
 	//日志
