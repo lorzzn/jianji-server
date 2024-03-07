@@ -41,9 +41,11 @@ func (*App) GetAppConfig(c *gin.Context) (code int, message string, data any) {
 			"city":    record.City.Names["en"],
 		}
 	}
+	sessionId, _ := c.Get("SessionId")
 	data = gin.H{
-		"time":     time.Now().UnixNano(),
-		"location": location,
+		"time":       time.Now().UnixNano(),
+		"location":   location,
+		"session_id": sessionId,
 	}
 	code = r.OK
 	return
