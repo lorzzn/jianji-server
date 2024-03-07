@@ -34,7 +34,10 @@ func (*App) GetPublicKey(c *gin.Context) (code int, message string, data any) {
 
 func (*App) GetAppConfig(c *gin.Context) (code int, message string, data any) {
 	record, err := utils.ClientPublicIP(c)
-	location := gin.H{}
+	location := gin.H{
+		"country": "",
+		"city":    "",
+	}
 	if err == nil {
 		location = gin.H{
 			"country": record.Country.Names["en"],
