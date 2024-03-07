@@ -42,9 +42,12 @@ func main() {
 	//应用中间件
 	engine.Use(middleware.CORS())
 	engine.Use(middleware.SessionMiddleware())
+	engine.Use(middleware.SessionIdMiddleware())
 	engine.Use(middleware.JWTAuthMiddleware())
 	engine.Use(middleware.RequestIdMiddleWare())
 	engine.Use(middleware.DecryptMiddleware())
+	engine.Use(middleware.TraceIdMiddleware())
+	engine.Use(middleware.ResponseLogMiddleware())
 
 	//应用路由
 	routes.SetApiRoutes(engine)
