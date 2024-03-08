@@ -6,7 +6,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
 
 type User struct{}
@@ -15,7 +14,7 @@ func (*User) Login() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		params, _ := utils.GetRequestParams[request.Login](c)
 		if err := StructValidate(c, &params,
-			validation.Field(&params.Email, validation.Required, is.Email),
+			validation.Field(&params.Email, validation.Required, validation.Match(EmailRegexp()).Error("请输入正确的邮箱地址")),
 			validation.Field(&params.Password, validation.Required),
 		); err != nil {
 			c.Abort()
