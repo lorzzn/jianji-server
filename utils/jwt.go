@@ -88,7 +88,7 @@ func RefreshToken(accessToken, refreshToken string) (newAccessToken, newRefreshT
 
 	// 从旧access token中解析出claims数据	解析出payload负载信息
 	var claims CustomClaims
-	_, err = jwt.ParseWithClaims(accessToken, &claims, keyFunc)
+	_, tokenErr := jwt.ParseWithClaims(accessToken, &claims, keyFunc)
 
 	//检查token是否已经拉黑
 	blacklisted, err := CheckJWTIsBlacklisted(claims.JwtUUID.String())
@@ -103,7 +103,7 @@ func RefreshToken(accessToken, refreshToken string) (newAccessToken, newRefreshT
 
 	// 当access token是过期错误 并且 refresh token没有过期时就创建一个新的access token
 	var v *jwt.ValidationError
-	var ok = errors.As(err, &v)
+	var ok = errors.As(tokenErr, &v)
 	if ok && v.Errors == jwt.ValidationErrorExpired {
 		return GenToken(claims.UserId, claims.UserUUID)
 	}
