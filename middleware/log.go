@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"bytes"
+	"io"
 	"jianji-server/entity"
 	"jianji-server/utils"
 	"net/http/httputil"
@@ -23,12 +24,16 @@ func addLog(log *entity.ResponseLog) {
 	utils.DB.Create(log)
 }
 
-func ResponseLogMiddleware() gin.HandlerFunc {
+func LogMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		rlw := &responseLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
 		c.Writer = rlw
+		// 将 request body 储存起来供多次使用
+		bodyByte, _ := io.ReadAll(c.Request.Body)
+		c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyByte))
 		c.Next()
 
+		c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyByte))
 		dump, _ := httputil.DumpRequest(c.Request, true)
 		sessionId, _ := c.Get("SessionId")
 		traceId, _ := c.Get("TraceId")

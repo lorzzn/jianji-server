@@ -47,7 +47,7 @@ func main() {
 	engine.Use(middleware.RequestIdMiddleWare())
 	engine.Use(middleware.DecryptMiddleware())
 	engine.Use(middleware.TraceIdMiddleware())
-	engine.Use(middleware.ResponseLogMiddleware())
+	engine.Use(middleware.LogMiddleware())
 
 	//应用路由
 	routes.SetApiRoutes(engine)
