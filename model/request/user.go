@@ -1,8 +1,9 @@
 package request
 
 type Login struct {
-	Email    string `json:"email" form:"email"`
-	Password string `json:"password" form:"password"`
+	Email       string `json:"email" form:"email"`
+	Password    string `json:"password" form:"password"`
+	Fingerprint string `json:"fingerprint" form:"fingerprint"`
 }
 
 type Signup = Login

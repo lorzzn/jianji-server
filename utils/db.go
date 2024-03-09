@@ -19,6 +19,7 @@ func AutoMigrateDB() {
 		&entity.User{},
 		&entity.UserPassword{},
 		&entity.ResponseLog{},
+		&entity.UserToken{},
 	}
 
 	for _, dbEntity := range dbEntities {

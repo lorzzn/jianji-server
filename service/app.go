@@ -33,11 +33,13 @@ func (*App) GetPublicKey(c *gin.Context) (code int, message string, data any) {
 }
 
 func (*App) GetAppConfig(c *gin.Context) (code int, message string, data any) {
-	record, err := utils.ClientPublicIP(c)
+	ip := utils.GetClientIP(c)
 	location := gin.H{
 		"country": "",
 		"city":    "",
 	}
+
+	record, err := utils.GetIPGeoRecord(ip)
 	if err == nil {
 		location = gin.H{
 			"country": record.Country.Names["en"],
@@ -46,7 +48,7 @@ func (*App) GetAppConfig(c *gin.Context) (code int, message string, data any) {
 	}
 	sessionId, _ := c.Get("SessionId")
 	data = gin.H{
-		"time":       time.Now().UnixNano(),
+		"time":       time.Now().UnixMilli(),
 		"location":   location,
 		"session_id": sessionId,
 	}

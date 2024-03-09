@@ -1,16 +1,17 @@
 package service
 
 import (
-	"github.com/cstockton/go-conv"
-	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/mitchellh/mapstructure"
 	"jianji-server/dao"
 	"jianji-server/entity"
 	"jianji-server/model/request"
 	"jianji-server/model/response"
 	"jianji-server/utils"
 	"jianji-server/utils/r"
+
+	"github.com/cstockton/go-conv"
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"github.com/mitchellh/mapstructure"
 )
 
 type User struct{}
@@ -57,30 +58,28 @@ func (*User) RefreshToken(c *gin.Context) (code int, message string, data *respo
 	params, _ := utils.GetRequestParams[request.RefreshToken](c)
 	token := params.Token
 
-	var err error
-	var refreshToken string
-	token, refreshToken, err = utils.RefreshToken(token, params.RefreshToken)
+	tokenData, err := utils.RefreshToken(token, params.RefreshToken)
 	if err != nil {
 		code = r.USER_REFRESHTOKEN_FAILED
 		return
 	}
 
 	data = &response.RefreshToken{
-		Token:        token,
-		RefreshToken: refreshToken,
+		Token:        tokenData.Token,
+		RefreshToken: tokenData.RefreshToken,
 	}
 
 	return
 }
 
 func (*User) Logout(c *gin.Context) (code int, message string) {
-	jwtUUID, ok := c.Get("JwtUUID")
+	tokenUUID, ok := c.Get("TokenUUID")
 	if !ok {
 		code = r.USER_NOT_LOGIN
 		return
 	}
 
-	_ = utils.AddJWTToBlacklist(jwtUUID.(string))
+	utils.AddTokenToBlacklist(tokenUUID.(string))
 
 	code = r.OK
 	message = " 退出登录成功"
@@ -116,20 +115,40 @@ func (*User) Login(c *gin.Context) (code int, message string, data *response.Log
 	}
 
 	// 登录成功和注册成功都要返回生成的 jwt token
-	var err error
-	data.Token, data.RefreshToken, err = utils.GenToken(data.UserInfo.ID, data.UserInfo.UUID)
+	tokenDate, err := utils.GenToken(data.UserInfo.ID, data.UserInfo.UUID)
 	if err != nil {
 		code = r.JWT_AUTHORIZATION_FAILED
 		data = nil
 		return
 	}
 
+	data.Token = tokenDate.Token
+	data.RefreshToken = tokenDate.RefreshToken
+
+	//将jwt token授权的详细信息储存到数据库
+	userToken := &entity.UserToken{
+		UserUUID:          data.UserInfo.UUID,
+		Token:             data.Token,
+		TokenUUID:         tokenDate.TokenUUID,
+		ClientFingerprint: params.Fingerprint,
+		UserAgent:         c.Request.UserAgent(),
+		ExpiresAt:         tokenDate.ExpiresAt,
+	}
+	ip := utils.GetClientIP(c)
+	geoRecord, err := utils.GetIPGeoRecord(ip)
+	if err == nil {
+		userToken.Country = geoRecord.Country.Names["en"]
+		userToken.City = geoRecord.City.Names["en"]
+	}
+
+	utils.DB.Create(userToken)
+
 	return
 }
 
 func (*User) Active(c *gin.Context) (code int, message string, data *response.Login) {
 	params, _ := utils.GetRequestParams[request.Active](c)
-	email, password, err := utils.GetActiveEmailStateInfo(params.Email, params.State)
+	email, password, fingerprint, err := utils.GetActiveEmailStateInfo(params.Email, params.State)
 	if err != nil {
 		code = 500
 		message = err.Error()
@@ -172,20 +191,13 @@ func (*User) Active(c *gin.Context) (code int, message string, data *response.Lo
 	// 提交事务
 	tx.Commit()
 
-	code = r.OK
-	message = "注册成功"
-	data = &response.Login{
-		UserInfo: *user,
-	}
-
-	// 激活成功要返回生成的 jwt token
-	data.Token, data.RefreshToken, err = utils.GenToken(data.UserInfo.ID, data.UserInfo.UUID)
-	if err != nil {
-		code = r.JWT_AUTHORIZATION_FAILED
-		data = nil
-		return
-	}
-
+	//跳到下一个中间件Login
+	c.Set(utils.ContextRequestParams, &request.Login{
+		Email:       email,
+		Password:    password,
+		Fingerprint: fingerprint,
+	})
+	c.Next()
 	return
 }
 
@@ -204,7 +216,7 @@ func (*User) Signup(c *gin.Context) (code int, message string, data *response.Lo
 		return
 	}
 
-	err = utils.SendActiveEmail(params.Email, string(gpw))
+	err = utils.SendActiveEmail(params.Email, string(gpw), params.Fingerprint)
 	if err != nil {
 		code = 500
 		message = "激活链接邮件发送失败"

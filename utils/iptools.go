@@ -3,6 +3,7 @@ package utils
 import (
 	"errors"
 	"jianji-server/config"
+	"log"
 	"net"
 
 	"github.com/gin-gonic/gin"
@@ -17,11 +18,21 @@ var (
 )
 
 func SetupMmdb() bool {
-	success, _ := mmdb.UpdateGeoLite2City(ctx, mmdbPath, config.MaxMind.LicenseKey)
+	log.Println("更新 geoip 数据库...")
+	success, err := mmdb.UpdateGeoLite2City(ctx, mmdbPath, config.MaxMind.LicenseKey)
+	if err != nil {
+		log.Println("更新失败: ", err)
+	} else {
+		log.Println("更新成功")
+	}
 	return success
 }
 
-func ClientPublicIP(c *gin.Context) (*geoip2.City, error) {
+func GetClientIP(c *gin.Context) net.IP {
+	return net.ParseIP(c.ClientIP())
+}
+
+func GetIPGeoRecord(ip net.IP) (*geoip2.City, error) {
 	if FileExists(mmdbPath) {
 		return nil, errors.New("GeoLite2-City.mmdb 不存在")
 	}
@@ -32,9 +43,9 @@ func ClientPublicIP(c *gin.Context) (*geoip2.City, error) {
 	defer func(db *geoip2.Reader) {
 		err := db.Close()
 		if err != nil {
-
+			log.Panicln(err)
 		}
 	}(geoDb)
-	record, _ := geoDb.City(net.ParseIP(c.ClientIP()))
+	record, _ := geoDb.City(ip)
 	return record, nil
 }

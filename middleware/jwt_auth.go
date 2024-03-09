@@ -36,7 +36,7 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		}
 
 		//检查jwt是否已拉黑（退出登录...）
-		blacklisted, err2 := utils.CheckJWTIsBlacklisted(mc.JwtUUID.String())
+		blacklisted, err2 := utils.IsTokenBlacklisted(mc.TokenUUID.String())
 		if err2 != nil {
 			r.OkJsonResult(c, r.FAIL, "", nil)
 			c.Abort()
@@ -52,7 +52,7 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		// 储存 jwt 信息
 		c.Set("UserId", strconv.FormatUint(mc.UserId, 10))
 		c.Set("UserUUID", mc.UserUUID.String())
-		c.Set("JwtUUID", mc.JwtUUID.String())
+		c.Set("TokenUUID", mc.TokenUUID.String())
 		c.Set("Token", parts[1])
 
 		//后续的处理函数可以通过 c.Get("..") 来获取

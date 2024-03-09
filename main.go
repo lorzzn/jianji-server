@@ -17,11 +17,14 @@ import (
 var g errgroup.Group
 
 func main() {
+	//日志
+	utils.SetupLogger()
+	//cron
+	utils.SetupCron()
+	//初始化 geoip 数据库
 	utils.SetupMmdb()
 	//初始化数据库
 	utils.SetupDB()
-	//日志
-	utils.SetupLogger()
 	//redis
 	utils.SetupRedis()
 

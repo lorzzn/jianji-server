@@ -26,7 +26,11 @@ func (*User) Signup(c *gin.Context) {
 
 func (*User) Active(c *gin.Context) {
 	var code, message, data = UserService.Active(c)
-	r.OkJsonResult(c, code, message, data)
+	if code != r.OK {
+		r.OkJsonResult(c, code, message, data)
+		c.Abort()
+		return
+	}
 }
 
 func (*User) Logout(c *gin.Context) {

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"jianji-server/config"
 	"log"
 	"os"
@@ -55,7 +56,7 @@ func getEncoder() zapcore.Encoder {
 
 // 日志输出路径: 文件、控制台、双向输出
 func getWriterSyncer() zapcore.WriteSyncer {
-	file, _ := os.Create(config.Zap.Directory + "/server.log")
+	file, _ := os.Create(fmt.Sprintf("%s/server-%d.log", config.Zap.Directory, time.Now().UnixMilli()))
 
 	// 双向输出
 	if config.Zap.LogInConsole {
