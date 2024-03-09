@@ -115,7 +115,7 @@ func (*User) Login(c *gin.Context) (code int, message string, data *response.Log
 	// 登录成功和注册成功都要返回生成的 jwt token
 	tokenDate, err := utils.GenToken(c, data.UserInfo.ID, data.UserInfo.UUID, params.Fingerprint)
 	if err != nil {
-		code = r.JWT_AUTHORIZATION_FAILED
+		code = r.TOKEN_AUTHORIZATION_FAILED
 		data = nil
 		return
 	}

@@ -141,10 +141,9 @@ func RefreshToken(c *gin.Context, token, refreshToken string) (*TokenData, error
 		return nil, err
 	}
 
-	// 当access token是过期错误 并且 refresh token没有过期时就创建一个新的access token
-	var v *jwt.ValidationError
-	var ok = errors.As(tokenErr, &v)
-	if ok && v.Errors == jwt.ValidationErrorExpired {
+	// 当access token是过期错误时,将其从数据库中软删除. 并且 refresh token
+	if IsTokenValidationErrorExpired(tokenErr) {
+		SoftDeleteUserToken(claims.TokenUUID)
 		return GenToken(c, claims.UserId, claims.UserUUID, claims.ClientFingerprint)
 	}
 
@@ -172,12 +171,22 @@ func AddTokenToBlacklist(tokenUUID string) {
 	}
 }
 
+func IsTokenValidationErrorExpired(err error) bool {
+	var v *jwt.ValidationError
+	var ok = errors.As(err, &v)
+	return ok && v.Errors == jwt.ValidationErrorExpired
+}
+
 // IsTokenBlacklisted 检查令牌是否在黑名单中
 func IsTokenBlacklisted(tokenUUID string) (bool, error) {
 	result, err := RDB.Exists(RedisGlobalContext, fmt.Sprintf("%s:%s", blacklistKey, tokenUUID)).Result()
 	return result == 1, err
 }
 
-func CleanExpiredDatabaseUserToken() {
-	DB.Where("expires_at < ?", time.Now()).Updates(&entity.UserToken{Status: -1})
+func SoftDeleteUserToken(tokenUUID uuid.UUID) {
+	DB.Model(&entity.UserToken{}).Where("token_uuid = ?", tokenUUID.String()).Updates(&entity.UserToken{Status: -1})
+}
+
+func SoftDeleteExpiredUserTokenInDatabase() {
+	DB.Model(&entity.UserToken{}).Where("expires_at < ?", time.Now()).Updates(&entity.UserToken{Status: -1})
 }

@@ -10,12 +10,12 @@ const (
 	ERROR_INVALID_PARAM = 9003
 	ERROR_DB_OPE        = 9004
 
-	//jwt错误
-	JWT_EMPTY_AUTHORIZATION   = 2003
-	JWT_BAD_AUTHORIZATION     = 2004
-	JWT_AUTHORIZATION_INVALID = 2005
-	JWT_NOT_EXISTED           = 2006
-	JWT_AUTHORIZATION_FAILED  = 2007
+	// token 错误
+	TOKEN_IS_EMPTY              = 2003
+	TOKEN_IS_BAD                = 2004
+	TOKEN_AUTHORIZATION_INVALID = 2005
+	TOKEN_NOT_EXISTED           = 2006
+	TOKEN_AUTHORIZATION_FAILED  = 2007
 
 	//应用接口错误
 	APP_CREATERSA_FAILED = 20001
@@ -39,11 +39,11 @@ var codeMsg = map[int]string{
 	ERROR_INVALID_PARAM: "不合法的请求参数",
 	ERROR_DB_OPE:        "数据库操作异常",
 
-	JWT_EMPTY_AUTHORIZATION:   "请求头Authorization不能为空",
-	JWT_BAD_AUTHORIZATION:     "请求头Authorization格式错误",
-	JWT_AUTHORIZATION_INVALID: "无效的token",
-	JWT_NOT_EXISTED:           "请求未授权",
-	JWT_AUTHORIZATION_FAILED:  "生成授权token失败",
+	TOKEN_IS_EMPTY:              "TOKEN 不能为空",
+	TOKEN_IS_BAD:                "TOKEN 格式错误",
+	TOKEN_AUTHORIZATION_INVALID: "登录已过期",
+	TOKEN_NOT_EXISTED:           "未登录",
+	TOKEN_AUTHORIZATION_FAILED:  "登录失败",
 
 	//应用接口错误
 	APP_CREATERSA_FAILED: "生成授权密钥出错",
@@ -54,7 +54,7 @@ var codeMsg = map[int]string{
 	USER_EXISTED:             "用户已注册，请直接登录",
 	USER_PASSWORD_INCORRECT:  "登录密码错误",
 	USER_NOT_LOGIN:           "用户未登录",
-	USER_REFRESHTOKEN_FAILED: "重新授权失败",
+	USER_REFRESHTOKEN_FAILED: "登录已过期，请重新登录",
 	USER_NOT_EXISTED:         "用户不存在",
 }
 

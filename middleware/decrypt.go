@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"bytes"
 	"encoding/json"
+	"io"
 	"jianji-server/model/request"
 	"jianji-server/utils"
 	"jianji-server/utils/r"
@@ -16,6 +18,9 @@ func DecryptMiddleware() func(c *gin.Context) {
 			c.Next()
 			return
 		}
+
+		bodyByte, _ := io.ReadAll(c.Request.Body)
+		c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyByte))
 
 		// 1.获取传参， 加密请求的参数
 		var params request.Encrypted
@@ -60,6 +65,7 @@ func DecryptMiddleware() func(c *gin.Context) {
 		}
 
 		c.Set(utils.ContextDecryptedParams, data)
+		c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyByte))
 		c.Next()
 		return
 	}

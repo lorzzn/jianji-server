@@ -21,16 +21,21 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 
 		//验证token格式
 		if !(len(parts) == 2 && parts[0] == "Bearer") {
-			r.OkJsonResult(c, r.JWT_BAD_AUTHORIZATION, "", nil)
+			r.OkJsonResult(c, r.TOKEN_IS_BAD, "", nil)
 			//阻止调用后续的函数
 			c.Abort()
 			return
 		}
 
 		//获取jwt信息
-		mc, err := utils.ParseToken(parts[1])
-		if err != nil {
-			r.OkJsonResult(c, r.JWT_AUTHORIZATION_INVALID, "", nil)
+		mc, tokenErr := utils.ParseToken(parts[1])
+		if tokenErr != nil {
+			//过期token软删除
+			if utils.IsTokenValidationErrorExpired(tokenErr) {
+				utils.SoftDeleteUserToken(mc.TokenUUID)
+			}
+
+			r.OkJsonResult(c, r.TOKEN_AUTHORIZATION_INVALID, "", nil)
 			c.Abort()
 			return
 		}
