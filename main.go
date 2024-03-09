@@ -40,6 +40,7 @@ func main() {
 	engine := gin.Default()
 
 	//应用中间件
+	engine.Use(middleware.LogMiddleware())
 	engine.Use(middleware.CORS())
 	engine.Use(middleware.SessionMiddleware())
 	engine.Use(middleware.SessionIdMiddleware())
@@ -47,7 +48,6 @@ func main() {
 	engine.Use(middleware.RequestIdMiddleWare())
 	engine.Use(middleware.DecryptMiddleware())
 	engine.Use(middleware.TraceIdMiddleware())
-	engine.Use(middleware.LogMiddleware())
 
 	//应用路由
 	routes.SetApiRoutes(engine)
