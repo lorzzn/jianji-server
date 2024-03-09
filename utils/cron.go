@@ -9,8 +9,9 @@ import (
 var CronList []cron.EntryID
 var CronInstance *cron.Cron
 var Crontab = map[string]func(){
-	"@every 10s": func() {
-		log.Println("heartbeat")
+	"@every 24h": func() {
+		Logger.Info("软删除数据库中过期的用户token")
+		CleanExpiredDatabaseUserToken()
 	},
 }
 

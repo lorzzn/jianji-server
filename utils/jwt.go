@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
 
@@ -15,9 +16,10 @@ import (
 // 我们这里需要额外记录一个UserId字段，所以要自定义结构体
 // 如果想要保存更多信息，都可以添加到这个结构体中
 type CustomClaims struct {
-	UserId    uint64    `json:"user_id"`
-	UserUUID  uuid.UUID `json:"user_uuid"`
-	TokenUUID uuid.UUID `json:"jwt_id"`
+	UserId            uint64    `json:"user_id"`
+	UserUUID          uuid.UUID `json:"user_uuid"`
+	TokenUUID         uuid.UUID `json:"token_uuid"`
+	ClientFingerprint string    `json:"client_fingerprint"`
 	jwt.StandardClaims
 }
 
@@ -46,21 +48,22 @@ func keyFunc(_ *jwt.Token) (i interface{}, err error) {
 }
 
 // GenToken 生成JWT 生成 access_token 和 refresh_token
-func GenToken(userid uint64, userUUID uuid.UUID) (*TokenData, error) {
+func GenToken(c *gin.Context, userID uint64, userUUID uuid.UUID, fingerprint string) (*TokenData, error) {
 	// 创建一个我们自己的声明
 	tokenUUID := uuid.New()
 	expiresAt := time.Now().Add(TokenExpireDuration)
-	c := CustomClaims{
-		userid, // 自定义字段
+	claims := CustomClaims{
+		userID, // 自定义字段
 		userUUID,
 		tokenUUID,
+		fingerprint,
 		jwt.StandardClaims{ // JWT规定的7个官方字段
 			ExpiresAt: expiresAt.Unix(), // 过期时间
 			Issuer:    "server",         // 签发人
 		},
 	}
 	// 加密并获得完整的编码后的字符串token
-	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, c).SignedString(jwtSecret)
+	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(jwtSecret)
 	if err != nil {
 		return nil, err
 	}
@@ -69,8 +72,26 @@ func GenToken(userid uint64, userUUID uuid.UUID) (*TokenData, error) {
 	refreshToken, err := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(RefreshTokenExpireDuration).Unix(), // 过期时间
 		Issuer:    "server",                                          // 签发人
-	}).SignedString(jwtSecret)
-	// 使用指定的secret签名并获得完整的编码后的字符串token
+	}).SignedString(jwtSecret) // 使用指定的secret签名并获得完整的编码后的字符串token
+
+	//将jwt token授权的详细信息储存到数据库
+	userToken := &entity.UserToken{
+		UserUUID:          userUUID,
+		Token:             token,
+		TokenUUID:         tokenUUID,
+		ClientFingerprint: fingerprint,
+		UserAgent:         c.Request.UserAgent(),
+		ExpiresAt:         expiresAt,
+	}
+	ip := GetClientIP(c)
+	geoRecord, err := GetIPGeoRecord(ip)
+	if err == nil {
+		userToken.Country = geoRecord.Country.Names["en"]
+		userToken.City = geoRecord.City.Names["en"]
+	}
+
+	DB.Create(userToken)
+
 	return &TokenData{
 		Token:        token,
 		RefreshToken: refreshToken,
@@ -95,7 +116,7 @@ func ParseToken(tokenString string) (claims *CustomClaims, err error) {
 }
 
 // RefreshToken 刷新Token
-func RefreshToken(token, refreshToken string) (*TokenData, error) {
+func RefreshToken(c *gin.Context, token, refreshToken string) (*TokenData, error) {
 	newToken := token
 	newRefreshToken := refreshToken
 
@@ -124,7 +145,7 @@ func RefreshToken(token, refreshToken string) (*TokenData, error) {
 	var v *jwt.ValidationError
 	var ok = errors.As(tokenErr, &v)
 	if ok && v.Errors == jwt.ValidationErrorExpired {
-		return GenToken(claims.UserId, claims.UserUUID)
+		return GenToken(c, claims.UserId, claims.UserUUID, claims.ClientFingerprint)
 	}
 
 	return &TokenData{
@@ -155,4 +176,8 @@ func AddTokenToBlacklist(tokenUUID string) {
 func IsTokenBlacklisted(tokenUUID string) (bool, error) {
 	result, err := RDB.Exists(RedisGlobalContext, fmt.Sprintf("%s:%s", blacklistKey, tokenUUID)).Result()
 	return result == 1, err
+}
+
+func CleanExpiredDatabaseUserToken() {
+	DB.Where("expires_at < ?", time.Now()).Updates(&entity.UserToken{Status: -1})
 }

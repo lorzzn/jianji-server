@@ -56,9 +56,7 @@ func (*User) GetProfile(c *gin.Context) (code int, message string, data *respons
 
 func (*User) RefreshToken(c *gin.Context) (code int, message string, data *response.RefreshToken) {
 	params, _ := utils.GetRequestParams[request.RefreshToken](c)
-	token := params.Token
-
-	tokenData, err := utils.RefreshToken(token, params.RefreshToken)
+	tokenData, err := utils.RefreshToken(c, params.Token, params.RefreshToken)
 	if err != nil {
 		code = r.USER_REFRESHTOKEN_FAILED
 		return
@@ -115,7 +113,7 @@ func (*User) Login(c *gin.Context) (code int, message string, data *response.Log
 	}
 
 	// 登录成功和注册成功都要返回生成的 jwt token
-	tokenDate, err := utils.GenToken(data.UserInfo.ID, data.UserInfo.UUID)
+	tokenDate, err := utils.GenToken(c, data.UserInfo.ID, data.UserInfo.UUID, params.Fingerprint)
 	if err != nil {
 		code = r.JWT_AUTHORIZATION_FAILED
 		data = nil
@@ -124,24 +122,6 @@ func (*User) Login(c *gin.Context) (code int, message string, data *response.Log
 
 	data.Token = tokenDate.Token
 	data.RefreshToken = tokenDate.RefreshToken
-
-	//将jwt token授权的详细信息储存到数据库
-	userToken := &entity.UserToken{
-		UserUUID:          data.UserInfo.UUID,
-		Token:             data.Token,
-		TokenUUID:         tokenDate.TokenUUID,
-		ClientFingerprint: params.Fingerprint,
-		UserAgent:         c.Request.UserAgent(),
-		ExpiresAt:         tokenDate.ExpiresAt,
-	}
-	ip := utils.GetClientIP(c)
-	geoRecord, err := utils.GetIPGeoRecord(ip)
-	if err == nil {
-		userToken.Country = geoRecord.Country.Names["en"]
-		userToken.City = geoRecord.City.Names["en"]
-	}
-
-	utils.DB.Create(userToken)
 
 	return
 }
