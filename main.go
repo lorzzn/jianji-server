@@ -52,6 +52,7 @@ func main() {
 	engine.Use(middleware.TraceIdMiddleware())
 	engine.Use(middleware.ResponseLoggerMiddleware())
 	engine.Use(middleware.ErrorLoggerMiddleware())
+	engine.Use(middleware.GinzapLoggerMiddleware())
 
 	//应用路由
 	routes.SetApiRoutes(engine)
