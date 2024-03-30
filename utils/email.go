@@ -10,6 +10,8 @@ import (
 	"net/mail"
 	"net/smtp"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 type EmailActiveData struct {
@@ -20,7 +22,12 @@ type EmailActiveData struct {
 }
 
 // SendEmail https://gist.github.com/chrisgillis/10888032
-func SendEmail(receiver string, subject string, body string) error {
+func SendEmail(receiver string, subject string, body string) (err error) {
+	defer func() {
+		if err != nil {
+			Logger.Error("SendEmail error", zap.Error(err), zap.Stack("stack"))
+		}
+	}()
 
 	from := mail.Address{Name: "简记", Address: config.Email.From}
 	to := mail.Address{Address: receiver}
@@ -56,45 +63,45 @@ func SendEmail(receiver string, subject string, body string) error {
 	// from the very beginning (no starttls)
 	conn, err := tls.Dial("tcp", servername, tlsConfig)
 	if err != nil {
-		return err
+		return
 	}
 
 	c, err := smtp.NewClient(conn, host)
 	if err != nil {
-		return err
+		return
 	}
 
 	// Auth
 	if err = c.Auth(auth); err != nil {
-		return err
+		return
 	}
 
 	// To && From
 	if err = c.Mail(from.Address); err != nil {
-		return err
+		return
 	}
 
 	if err = c.Rcpt(to.Address); err != nil {
-		return err
+		return
 	}
 
 	// Data
 	w, err := c.Data()
 	if err != nil {
-		return err
+		return
 	}
 
 	_, err = w.Write([]byte(message))
 	if err != nil {
-		return err
+		return
 	}
 
 	err = w.Close()
 	if err != nil {
-		return err
+		return
 	}
-
-	return c.Quit()
+	err = c.Quit()
+	return
 }
 
 func GetWaitingActivationEmailKey(email string) string {
@@ -127,7 +134,7 @@ func SendActiveEmail(email string, password string, fingerprint string) error {
 		email,
 		"欢迎使用 简记 — 确认注册",
 		fmt.Sprintf(
-			"请点击下面的链接激活你的账户（链接30分钟内有效）\n%s/active?email=%s&state=%s",
+			"请点击下面的链接激活你的账户（链接30分钟内有效）\nhttp://%s/active?email=%s&state=%s",
 			config.Server.WebDomain,
 			email,
 			state,
@@ -153,12 +160,12 @@ func GetActiveEmailStateInfo(email string, state string) (string, string, string
 	// 获取后删掉redis中的state数据
 	err = RDB.Del(RedisGlobalContext, key).Err()
 	if err != nil {
-		return "", "", "", errors.New("系统发生错误")
+		return "", "", "", errors.New("重置state错误")
 	}
 
 	var data EmailActiveData
 	if err = json.Unmarshal([]byte(value), &data); err != nil {
-		return "", "", "", errors.New("系统发生错误")
+		return "", "", "", errors.New("读取用户注册信息错误")
 	}
 
 	// 用户重新获取激活链接的情况

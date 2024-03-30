@@ -33,6 +33,5 @@ func OkJsonResult(c *gin.Context, code int, message string, data any) {
 	if message == "" {
 		message = GetCodeMsg(code)
 	}
-
 	JsonResult(c, http.StatusOK, code, message, data)
 }

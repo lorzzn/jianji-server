@@ -11,11 +11,8 @@ import (
 )
 
 func GinzapLoggerMiddleware() gin.HandlerFunc {
-	//共用公共Logger，写入公共的log文件
-	logger := utils.Logger.WithOptions(zap.WrapCore(func(c zapcore.Core) zapcore.Core {
-		return zapcore.NewCore(utils.LoggerEncoder, utils.LoggerFileSyncer, utils.LoggerLevelEnabler)
-	}))
-
+	//和公共Logger写入同一个log文件
+	logger := zap.New(zapcore.NewCore(utils.LoggerEncoder, utils.LoggerFileSyncer, utils.LoggerLevelEnabler))
 	return ginzap.GinzapWithConfig(logger, &ginzap.Config{
 		UTC:        true,
 		TimeFormat: time.RFC3339,

@@ -10,12 +10,12 @@ type User struct{}
 
 func (*User) Login(c *gin.Context) {
 	var code, message, data = UserService.Login(c)
-	needSignup, exists := c.Get("NeedSignup")
-	//如果不需要注册，返回结果后终止
-	if !exists || !needSignup.(bool) {
+	//如果用户不存在就进行注册, 后面交给下一个handler Signup，否则返回登陆结果并中止
+	if code == r.USER_NOT_EXISTED {
+		c.Next()
+	} else {
 		r.OkJsonResult(c, code, message, data)
 		c.Abort()
-		return
 	}
 }
 
@@ -26,10 +26,12 @@ func (*User) Signup(c *gin.Context) {
 
 func (*User) Active(c *gin.Context) {
 	var code, message, data = UserService.Active(c)
-	if code != r.OK {
+	//如果有报错就中止执行
+	if code == r.OK {
+		c.Next()
+	} else {
 		r.OkJsonResult(c, code, message, data)
 		c.Abort()
-		return
 	}
 }
 

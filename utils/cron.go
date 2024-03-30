@@ -10,8 +10,8 @@ var CronList []cron.EntryID
 var CronInstance *cron.Cron
 var Crontab = map[string]func(){
 	"@daily": func() {
-		Logger.Info("软删除数据库中过期的用户token")
-		SoftDeleteExpiredUserTokenInDatabase()
+		Logger.Info("删除数据库中过期的用户token")
+		DeleteExpiredUserTokenInDatabase()
 	},
 }
 

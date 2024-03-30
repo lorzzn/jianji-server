@@ -1,9 +1,10 @@
 package types
 
 type Server struct {
-	WebDomain string
 	Port      string
 	Mode      string
+	Domain    string
+	WebDomain string
 }
 
 type Postgres struct {

@@ -1,6 +1,8 @@
 Server:
   Port: 3000
   Mode: debug
+  Domain: localhost:3000
+  WebDomain: localhost:5173
 
 Postgres:
   Host: localhost
@@ -18,6 +20,13 @@ Zap:
   Format: "console"
   ShowLine: true
   LogInConsole: true
+
+Email:
+  SMTPServer: smtp.xxx.com
+  SMTPPort: 465
+  From: xxx@xxx.com
+  Password: AAAAAABBBBBBBB
+  DefaultSubject: 简记
 
 Redis:
   Network: tcp

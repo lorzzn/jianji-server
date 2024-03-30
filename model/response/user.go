@@ -8,11 +8,11 @@ type Profile struct {
 
 type Login struct {
 	UserInfo     entity.User
-	Token        string
-	RefreshToken string
+	Token        string `json:"token"`
+	RefreshToken string `json:"refreshToken"`
 }
 
 type RefreshToken struct {
-	Token        string
-	RefreshToken string
+	Token        string `json:"token"`
+	RefreshToken string `json:"refreshToken"`
 }

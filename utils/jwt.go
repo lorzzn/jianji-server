@@ -16,10 +16,10 @@ import (
 // 我们这里需要额外记录一个UserId字段，所以要自定义结构体
 // 如果想要保存更多信息，都可以添加到这个结构体中
 type CustomClaims struct {
-	UserId            uint64    `json:"user_id"`
-	UserUUID          uuid.UUID `json:"user_uuid"`
-	TokenUUID         uuid.UUID `json:"token_uuid"`
-	ClientFingerprint string    `json:"client_fingerprint"`
+	UserId            uint64    `json:"userId"`
+	UserUUID          uuid.UUID `json:"userUUID"`
+	TokenUUID         uuid.UUID `json:"tokenUUID"`
+	ClientFingerprint string    `json:"clientFingerprint"`
 	jwt.StandardClaims
 }
 
@@ -141,9 +141,9 @@ func RefreshToken(c *gin.Context, token, refreshToken string) (*TokenData, error
 		return nil, err
 	}
 
-	// 当access token是过期错误时,将其从数据库中软删除. 并且 refresh token
+	// 当access token是过期错误时,将其从数据库中删除. 并且 refresh token
 	if IsTokenValidationErrorExpired(tokenErr) {
-		SoftDeleteUserToken(claims.TokenUUID)
+		DeleteUserToken(claims.TokenUUID)
 		return GenToken(c, claims.UserId, claims.UserUUID, claims.ClientFingerprint)
 	}
 
@@ -156,12 +156,8 @@ func RefreshToken(c *gin.Context, token, refreshToken string) (*TokenData, error
 }
 
 // AddTokenToBlacklist 模拟将令牌加入黑名单
-func AddTokenToBlacklist(tokenUUID string) {
-	tUUID, err := uuid.Parse(tokenUUID)
-	if err != nil {
-		Logger.Error(err.Error())
-	}
-	err = DB.Where(&entity.UserToken{TokenUUID: tUUID}).Limit(1).Updates(&entity.UserToken{Blacklisted: true}).Error
+func AddTokenToBlacklist(tokenUUID uuid.UUID) {
+	err := DB.Where(&entity.UserToken{TokenUUID: tokenUUID}).Limit(1).Updates(&entity.UserToken{Blacklisted: true}).Error
 	if err != nil {
 		Logger.Error(err.Error())
 	}
@@ -183,10 +179,10 @@ func IsTokenBlacklisted(tokenUUID string) (bool, error) {
 	return result == 1, err
 }
 
-func SoftDeleteUserToken(tokenUUID uuid.UUID) {
-	DB.Model(&entity.UserToken{}).Where("token_uuid = ?", tokenUUID.String()).Updates(&entity.UserToken{Status: -1})
+func DeleteUserToken(tokenUUID uuid.UUID) {
+	DB.Where("token_uuid = ?", tokenUUID.String()).Delete(&entity.UserToken{})
 }
 
-func SoftDeleteExpiredUserTokenInDatabase() {
-	DB.Model(&entity.UserToken{}).Where("expires_at < ?", time.Now()).Updates(&entity.UserToken{Status: -1})
+func DeleteExpiredUserTokenInDatabase() {
+	DB.Where("expires_at < ?", time.Now()).Delete(&entity.UserToken{})
 }

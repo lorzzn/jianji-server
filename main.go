@@ -21,8 +21,10 @@ func main() {
 	utils.SetupLogger()
 	//cron
 	utils.SetupCron()
-	//初始化 geoip 数据库
-	utils.SetupMmdb()
+	if utils.ConsoleConfirm("是否更新geoip数据库？", 2) {
+		//更新geoip 数据库
+		utils.SetupMmdb()
+	}
 	//初始化数据库
 	utils.SetupDB()
 	//redis

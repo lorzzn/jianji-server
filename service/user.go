@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/mitchellh/mapstructure"
+	"github.com/samber/lo"
 )
 
 type User struct{}
@@ -77,7 +78,7 @@ func (*User) Logout(c *gin.Context) (code int, message string) {
 		return
 	}
 
-	utils.AddTokenToBlacklist(tokenUUID.(string))
+	utils.AddTokenToBlacklist(tokenUUID.(uuid.UUID))
 
 	code = r.OK
 	message = " 退出登录成功"
@@ -90,11 +91,14 @@ func (*User) Login(c *gin.Context) (code int, message string, data *response.Log
 	user := getUserByEmail(params.Email)
 
 	if user.ID == 0 {
-		// 数据库中不存在用户就进行注册, 下一个handler为Signup
-		c.Set("NeedSignup", true)
-		c.Next()
+		// 数据库中不存在用户，用户未注册
+		code = r.USER_NOT_EXISTED
 		return
-	} else if password := getPasswordByUserUUID(user.UUID); password.ID != 0 && utils.CheckPassword(password.Password, params.Password) {
+	} else if password := getPasswordByUserUUID(user.UUID); password.ID != 0 && lo.Ternary(
+		params.From == "active", // 如果是激活账户操作，直接字符串比较，否则就是登录操作，需要对比hash后的密码
+		password.Password == params.Password,
+		utils.CheckPassword(password.Password, params.Password),
+	) {
 		// 用户密码验证成功
 		code = r.OK
 		message = "登录成功"
@@ -171,13 +175,14 @@ func (*User) Active(c *gin.Context) (code int, message string, data *response.Lo
 	// 提交事务
 	tx.Commit()
 
-	//跳到下一个中间件Login
-	c.Set(utils.ContextRequestParams, &request.Login{
+	//将登录操作的参数保存到上下文，后面交给下一个中间件Login
+	c.Set(utils.ContextRequestParams, request.Login{
 		Email:       email,
 		Password:    password,
 		Fingerprint: fingerprint,
+		From:        "active",
 	})
-	c.Next()
+
 	return
 }
 
@@ -199,7 +204,7 @@ func (*User) Signup(c *gin.Context) (code int, message string, data *response.Lo
 	err = utils.SendActiveEmail(params.Email, string(gpw), params.Fingerprint)
 	if err != nil {
 		code = 500
-		message = "激活链接邮件发送失败"
+		message = "发送激活邮件失败，请检查您的邮箱地址或联系我们的技术支持团队。"
 		return
 	}
 

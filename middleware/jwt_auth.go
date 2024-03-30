@@ -30,9 +30,9 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		//获取jwt信息
 		mc, tokenErr := utils.ParseToken(parts[1])
 		if tokenErr != nil {
-			//过期token软删除
+			//过期token删除
 			if utils.IsTokenValidationErrorExpired(tokenErr) {
-				utils.SoftDeleteUserToken(mc.TokenUUID)
+				utils.DeleteUserToken(mc.TokenUUID)
 			}
 
 			r.OkJsonResult(c, r.TOKEN_AUTHORIZATION_INVALID, "", nil)
@@ -56,8 +56,8 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 
 		// 储存 jwt 信息
 		c.Set("UserId", strconv.FormatUint(mc.UserId, 10))
-		c.Set("UserUUID", mc.UserUUID.String())
-		c.Set("TokenUUID", mc.TokenUUID.String())
+		c.Set("UserUUID", mc.UserUUID)
+		c.Set("TokenUUID", mc.TokenUUID)
 		c.Set("Token", parts[1])
 
 		//后续的处理函数可以通过 c.Get("..") 来获取
