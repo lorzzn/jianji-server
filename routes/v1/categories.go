@@ -10,15 +10,17 @@ import (
 func SetupCategoriesRoutes(router *gin.RouterGroup) {
 	CategoriesRouterGroup := router.Group("/categories")
 	{
-		CategoriesRouterGroup.POST("/list", CategoriesApi.List)
+		CategoriesRouterGroup.POST("/list", ValidateCommon.AuthRequire(), CategoriesApi.List)
 		CategoriesRouterGroup.POST(
 			"/create",
+			ValidateCommon.AuthRequire(),
 			utils.BindRequestParams[request.CreateCategories],
 			ValidateCategories.CreateCategories(),
 			CategoriesApi.Create,
 		)
 		CategoriesRouterGroup.POST(
 			"/delete",
+			ValidateCommon.AuthRequire(),
 			utils.BindRequestParams[request.DeleteCategories],
 			ValidateCategories.DeleteCategories(),
 			CategoriesApi.Delete,

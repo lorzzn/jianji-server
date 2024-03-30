@@ -132,7 +132,7 @@ func SendActiveEmail(email string, password string, fingerprint string) error {
 	// 发送激活链接到用户邮箱
 	err = SendEmail(
 		email,
-		"欢迎使用 简记 — 确认注册",
+		"欢迎使用简记 — 请确认您的注册",
 		fmt.Sprintf(
 			"请点击下面的链接激活你的账户（链接30分钟内有效）\nhttp://%s/active?email=%s&state=%s",
 			config.Server.WebDomain,

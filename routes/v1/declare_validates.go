@@ -5,4 +5,5 @@ import "jianji-server/validate"
 var (
 	ValidateUser       validate.User
 	ValidateCategories validate.Categories
+	ValidateCommon     validate.Common
 )
