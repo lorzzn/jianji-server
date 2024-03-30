@@ -33,6 +33,7 @@ func (*User) Active() gin.HandlerFunc {
 		params, _ := utils.GetRequestParams[request.Active](c)
 		if err := StructValidate(c, &params,
 			validation.Field(&params.State, validation.Required),
+			validation.Field(&params.Email, validation.Required),
 		); err != nil {
 			c.Abort()
 			return

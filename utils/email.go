@@ -157,12 +157,6 @@ func GetActiveEmailStateInfo(email string, state string) (string, string, string
 		return "", "", "", errors.New("无效的激活链接")
 	}
 
-	// 获取后删掉redis中的state数据
-	err = RDB.Del(RedisGlobalContext, key).Err()
-	if err != nil {
-		return "", "", "", errors.New("重置state错误")
-	}
-
 	var data EmailActiveData
 	if err = json.Unmarshal([]byte(value), &data); err != nil {
 		return "", "", "", errors.New("读取用户注册信息错误")
@@ -171,6 +165,12 @@ func GetActiveEmailStateInfo(email string, state string) (string, string, string
 	// 用户重新获取激活链接的情况
 	if data.State != state {
 		return "", "", "", errors.New("激活链接已失效")
+	}
+
+	// 使用后删掉redis中的state数据，将激活链接失效
+	err = RDB.Del(RedisGlobalContext, key).Err()
+	if err != nil {
+		return "", "", "", errors.New("重置state错误")
 	}
 
 	return data.Email, data.Password, data.Fingerprint, nil
