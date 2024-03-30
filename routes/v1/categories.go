@@ -10,7 +10,7 @@ import (
 func SetupCategoriesRoutes(router *gin.RouterGroup) {
 	CategoriesRouterGroup := router.Group("/categories")
 	{
-		CategoriesRouterGroup.POST("/load", CategoriesApi.Load)
+		CategoriesRouterGroup.POST("/list", CategoriesApi.List)
 		CategoriesRouterGroup.POST(
 			"/create",
 			utils.BindRequestParams[request.CreateCategories],

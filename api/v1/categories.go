@@ -9,8 +9,8 @@ import (
 type Categories struct {
 }
 
-func (*Categories) Load(c *gin.Context) {
-	var code, message, data = CategoriesService.Load(c)
+func (*Categories) List(c *gin.Context) {
+	var code, message, data = CategoriesService.List(c)
 	r.OkJsonResult(c, code, message, data)
 }
 

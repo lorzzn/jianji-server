@@ -18,7 +18,7 @@ import (
 type Categories struct {
 }
 
-func (*Categories) Load(c *gin.Context) (code int, message string, data *[]response.Categories) {
+func (*Categories) List(c *gin.Context) (code int, message string, data *[]response.Categories) {
 	userUUID, exists := c.Get("UserUUID")
 	if !exists {
 		code = r.USER_NOT_LOGIN
