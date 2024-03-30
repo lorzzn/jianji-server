@@ -88,6 +88,7 @@ func GenToken(c *gin.Context, userID uint64, userUUID uuid.UUID, fingerprint str
 	if err == nil {
 		userToken.Country = geoRecord.Country.Names["en"]
 		userToken.City = geoRecord.City.Names["en"]
+		userToken.IP = ip
 	}
 
 	DB.Create(userToken)
