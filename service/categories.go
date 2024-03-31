@@ -65,7 +65,7 @@ func (*Categories) Create(c *gin.Context) (code int, message string, data *respo
 	for parent.ParentValue != nil {
 		utils.DB.Preload("ParentCategories").First(&parent, parent.Value)
 		parent = *parent.ParentCategories
-		path += fmt.Sprintf("%d,", parent.Value)
+		path = fmt.Sprintf("%d,", parent.Value) + path
 	}
 
 	//更新path到数据库
