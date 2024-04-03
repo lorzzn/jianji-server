@@ -1,7 +1,7 @@
 Server:
-  Port: 3000
+  Port: 8800
   Mode: debug
-  Domain: localhost:3000
+  Domain: localhost:8800
   WebDomain: localhost:5173
 
 Postgres:

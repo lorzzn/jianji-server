@@ -19,6 +19,11 @@ func (*Categories) Create(c *gin.Context) {
 	r.OkJsonResult(c, code, message, data)
 }
 
+func (*Categories) Update(c *gin.Context) {
+	var code, message, data = CategoriesService.Update(c)
+	r.OkJsonResult(c, code, message, data)
+}
+
 func (*Categories) Delete(c *gin.Context) {
 	var code, message, data = CategoriesService.Delete(c)
 	r.OkJsonResult(c, code, message, data)

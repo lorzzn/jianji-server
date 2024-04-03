@@ -5,10 +5,11 @@ const (
 	FAIL = 500
 
 	// code= 9000... 通用错误
-	ERROR_BAD_PARAM     = 9001
-	ERROR_REQUEST_PAGE  = 9002
-	ERROR_INVALID_PARAM = 9003
-	ERROR_DB_OPE        = 9004
+	ERROR_BAD_PARAM           = 9001
+	ERROR_REQUEST_PAGE        = 9002
+	ERROR_INVALID_PARAM       = 9003
+	ERROR_DB_OPE              = 9004
+	ERROR_DB_DATA_NOT_EXISTED = 9005
 
 	// token 错误
 	TOKEN_IS_EMPTY              = 2003
@@ -28,16 +29,18 @@ const (
 	USER_NOT_LOGIN           = 10003
 	USER_REFRESHTOKEN_FAILED = 10004
 	USER_NOT_EXISTED         = 10005
+	USER_OPE_NOT_ALLOW       = 10006
 )
 
 var codeMsg = map[int]string{
 	OK:   "OK",
 	FAIL: "FAIL",
 
-	ERROR_BAD_PARAM:     "请求参数格式错误",
-	ERROR_REQUEST_PAGE:  "分页参数错误",
-	ERROR_INVALID_PARAM: "不合法的请求参数",
-	ERROR_DB_OPE:        "数据库操作异常",
+	ERROR_BAD_PARAM:           "请求参数格式错误",
+	ERROR_REQUEST_PAGE:        "分页参数错误",
+	ERROR_INVALID_PARAM:       "不合法的请求参数",
+	ERROR_DB_OPE:              "数据库操作异常",
+	ERROR_DB_DATA_NOT_EXISTED: "数据不存在",
 
 	TOKEN_IS_EMPTY:              "TOKEN 不能为空",
 	TOKEN_IS_BAD:                "TOKEN 格式错误",
@@ -56,6 +59,7 @@ var codeMsg = map[int]string{
 	USER_NOT_LOGIN:           "用户未登录",
 	USER_REFRESHTOKEN_FAILED: "登录已过期，请重新登录",
 	USER_NOT_EXISTED:         "用户不存在",
+	USER_OPE_NOT_ALLOW:       "操作不允许",
 }
 
 func GetCodeMsg(code int) string {

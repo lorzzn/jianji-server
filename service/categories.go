@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"jianji-server/entity"
 	"jianji-server/model/request"
 	"jianji-server/model/response"
@@ -11,7 +10,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/samber/lo"
 	"gorm.io/gorm"
 )
 
@@ -19,11 +17,7 @@ type Categories struct {
 }
 
 func (*Categories) List(c *gin.Context) (code int, message string, data *[]response.Categories) {
-	userUUID, exists := c.Get("UserUUID")
-	if !exists {
-		code = r.USER_NOT_LOGIN
-		return
-	}
+	userUUID, _ := c.Get("UserUUID")
 
 	err := utils.DB.Model(&entity.Categories{}).Where("user_uuid = ?", userUUID).Find(&data).Error
 	if err != nil {
@@ -35,18 +29,13 @@ func (*Categories) List(c *gin.Context) (code int, message string, data *[]respo
 
 func (*Categories) Create(c *gin.Context) (code int, message string, data *response.Categories) {
 	params, _ := utils.GetRequestParams[request.CreateCategories](c)
-	userUUID, exists := c.Get("UserUUID")
-
-	if !exists {
-		code = r.USER_NOT_LOGIN
-		data = nil
-		return
-	}
+	userUUID, _ := c.Get("UserUUID")
 
 	categories := entity.Categories{
-		UserUUID:    userUUID.(uuid.UUID),
-		Label:       params.Label,
-		ParentValue: lo.Ternary(params.ParentValue == 0, nil, lo.ToPtr(params.ParentValue)),
+		UserUUID:      userUUID.(uuid.UUID),
+		Label:         *params.Label,
+		ParentValue:   params.ParentValue,
+		OrdinalNumber: *params.OrdinalNumber,
 	}
 	err := utils.DB.Create(&categories).Error
 
@@ -59,38 +48,75 @@ func (*Categories) Create(c *gin.Context) (code int, message string, data *respo
 		return
 	}
 
-	//遍历父元素，获取path
-	parent := categories
-	var path string
-	for parent.ParentValue != nil {
-		utils.DB.Preload("ParentCategories").First(&parent, parent.Value)
-		parent = *parent.ParentCategories
-		path = fmt.Sprintf("%d,", parent.Value) + path
-	}
-
-	//更新path到数据库
-	if path != "" {
-		categories.Path = path[:len(path)-1]
-	}
-	err = utils.DB.Save(&categories).Error
-	if err != nil {
-		code = r.ERROR_DB_OPE
-		data = nil
-		return
-	}
-
 	data = &response.Categories{
 		Label:       categories.Label,
 		Value:       categories.Value,
 		ParentValue: categories.ParentValue,
-		Path:        categories.Path,
 	}
+	return
+}
+
+func (*Categories) Update(c *gin.Context) (code int, message string, data []*response.Categories) {
+	params, _ := utils.GetRequestParams[request.UpdateCategories](c)
+	userUUID, _ := c.Get("UserUUID")
+
+	var paramsValues []uint64
+	paramsValueMap := make(map[uint64]request.UpdateCategoriesDatum)
+	for _, datum := range params.Data {
+		if datum.Value != nil {
+			paramsValues = append(paramsValues, *datum.Value)
+			paramsValueMap[*datum.Value] = datum
+		}
+	}
+
+	var categories []entity.Categories
+	err := utils.DB.Where("value IN (?) AND user_uuid = ?", paramsValues, userUUID).Find(&categories).Error
+	if err != nil {
+		code = r.ERROR_DB_OPE
+		message = "你操作的分类不存在"
+		return
+	}
+
+	tx := utils.DB.Begin()
+
+	for _, category := range categories {
+		paramValue := paramsValueMap[category.Value]
+		category.ParentValue = paramValue.ParentValue
+		if paramValue.Label != nil {
+			category.Label = *paramValue.Label
+		}
+		if paramValue.OrdinalNumber != nil {
+			category.OrdinalNumber = *paramValue.OrdinalNumber
+		}
+		err = tx.Save(&category).Error
+		if err != nil {
+			break
+		}
+		data = append(data, &response.Categories{
+			Label:         category.Label,
+			Value:         category.Value,
+			ParentValue:   category.ParentValue,
+			OrdinalNumber: category.OrdinalNumber,
+		})
+	}
+	if err != nil {
+		tx.Rollback()
+		code = r.ERROR_DB_OPE
+		message = "保存失败"
+		data = nil
+		return
+	}
+
+	tx.Commit()
+
 	return
 }
 
 func (*Categories) Delete(c *gin.Context) (code int, message string, data any) {
 	params, _ := utils.GetRequestParams[request.DeleteCategories](c)
-	err := utils.DB.Where(&entity.Categories{Value: params.Value}).Select("Categories").Delete(&entity.Categories{}).Error
+	userUUID, _ := c.Get("UserUUID")
+
+	err := utils.DB.Where(&entity.Categories{Value: params.Value, UserUUID: userUUID.(uuid.UUID)}).Select("Categories").Delete(&entity.Categories{}).Error
 	if err != nil {
 		code = r.ERROR_DB_OPE
 		data = nil

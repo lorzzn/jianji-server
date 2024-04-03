@@ -19,6 +19,12 @@ func SetupCategoriesRoutes(router *gin.RouterGroup) {
 			CategoriesApi.Create,
 		)
 		CategoriesRouterGroup.POST(
+			"/update",
+			ValidateCommon.AuthRequire(),
+			utils.BindRequestParams[request.UpdateCategories],
+			CategoriesApi.Update,
+		)
+		CategoriesRouterGroup.POST(
 			"/delete",
 			ValidateCommon.AuthRequire(),
 			utils.BindRequestParams[request.DeleteCategories],
