@@ -27,32 +27,42 @@ func (*Categories) List(c *gin.Context) (code int, message string, data *[]respo
 	return
 }
 
-func (*Categories) Create(c *gin.Context) (code int, message string, data *response.Categories) {
+func (*Categories) Create(c *gin.Context) (code int, message string, data []*response.Categories) {
 	params, _ := utils.GetRequestParams[request.CreateCategories](c)
 	userUUID, _ := c.Get("UserUUID")
 
-	categories := entity.Categories{
-		UserUUID:      userUUID.(uuid.UUID),
-		Label:         *params.Label,
-		ParentValue:   params.ParentValue,
-		OrdinalNumber: *params.OrdinalNumber,
+	tx := utils.DB.Begin()
+	var err error
+	for _, datum := range params.Data {
+		category := &entity.Categories{
+			UserUUID:      userUUID.(uuid.UUID),
+			Label:         *datum.Label,
+			ParentValue:   datum.ParentValue,
+			OrdinalNumber: datum.OrdinalNumber,
+		}
+		err = utils.DB.Create(&category).Error
+		if err != nil {
+			break
+		}
+		data = append(data, &response.Categories{
+			Label:         category.Label,
+			Value:         category.Value,
+			ParentValue:   category.ParentValue,
+			OrdinalNumber: category.OrdinalNumber,
+		})
 	}
-	err := utils.DB.Create(&categories).Error
 
 	if err != nil {
+		tx.Rollback()
 		code = r.ERROR_DB_OPE
 		data = nil
+		message = "创建分类失败"
 		if !errors.Is(err, gorm.ErrForeignKeyViolated) {
 			message = "父级分类不存在"
 		}
 		return
 	}
 
-	data = &response.Categories{
-		Label:       categories.Label,
-		Value:       categories.Value,
-		ParentValue: categories.ParentValue,
-	}
 	return
 }
 
@@ -86,7 +96,7 @@ func (*Categories) Update(c *gin.Context) (code int, message string, data []*res
 			category.Label = *paramValue.Label
 		}
 		if paramValue.OrdinalNumber != nil {
-			category.OrdinalNumber = *paramValue.OrdinalNumber
+			category.OrdinalNumber = paramValue.OrdinalNumber
 		}
 		err = tx.Save(&category).Error
 		if err != nil {

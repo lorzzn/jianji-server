@@ -1,14 +1,18 @@
 package request
 
-type CreateCategories struct {
+type CreateCategoriesDatum struct {
 	Label         *string `json:"label" form:"label"`
 	ParentValue   *uint64 `json:"parentValue" form:"parentValue"`
 	OrdinalNumber *uint64 `json:"ordinalNumber" form:"ordinalNumber"`
 }
 
 type UpdateCategoriesDatum struct {
-	CreateCategories
+	CreateCategoriesDatum
 	Value *uint64
+}
+
+type CreateCategories struct {
+	Data []CreateCategoriesDatum `json:"data" form:"data"`
 }
 
 type UpdateCategories struct {

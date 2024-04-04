@@ -1,6 +1,7 @@
 package validate
 
 import (
+	"errors"
 	"jianji-server/model/request"
 	"jianji-server/utils"
 
@@ -15,8 +16,13 @@ func (*Categories) CreateCategories() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		params, _ := utils.GetRequestParams[request.CreateCategories](c)
 		if err := StructValidate(c, &params,
-			validation.Field(&params.Label, validation.Required),
-			validation.Field(&params.ParentValue, validation.Min(uint64(0)).Exclusive()),
+			validation.Field(&params.Data, validation.Each(validation.By(func(value any) error {
+				value, ok := value.(request.CreateCategoriesDatum)
+				if !ok {
+					return errors.New("参数格式不正确")
+				}
+				return nil
+			}))),
 		); err != nil {
 			c.Abort()
 			return

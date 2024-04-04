@@ -10,5 +10,5 @@ type Categories struct {
 	Value            uint64      `gorm:"auto_increment;unique;not null;autoIncrement:100;comment:值" json:"value"`
 	ParentValue      *uint64     `gorm:"comment:父级值" json:"parentValue"`
 	ParentCategories *Categories `gorm:"foreignKey:ParentValue;references:Value;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
-	OrdinalNumber    uint64      `gorm:"comment:序数" json:"ordinalNumber"`
+	OrdinalNumber    *uint64     `gorm:"comment:序数" json:"ordinalNumber"`
 }
