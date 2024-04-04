@@ -56,6 +56,7 @@ func AutoMigrateDB() {
 		&entity.ResponseLog{},
 		&entity.UserToken{},
 		&entity.Categories{},
+		&entity.Tag{},
 	}
 
 	for _, dbEntity := range dbEntities {

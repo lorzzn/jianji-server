@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"jianji-server/entity"
 	"jianji-server/model/request"
 	"jianji-server/model/response"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
 
 type Categories struct {
@@ -57,9 +55,9 @@ func (*Categories) Create(c *gin.Context) (code int, message string, data []*res
 		code = r.ERROR_DB_OPE
 		data = nil
 		message = "创建分类失败"
-		if !errors.Is(err, gorm.ErrForeignKeyViolated) {
-			message = "父级分类不存在"
-		}
+		//if !errors.Is(err, gorm.ErrForeignKeyViolated) {
+		//	message = "父级分类不存在"
+		//}
 		return
 	}
 

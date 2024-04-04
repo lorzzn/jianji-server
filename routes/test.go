@@ -2,21 +2,21 @@ package routes
 
 import (
 	"jianji-server/utils/r"
+	"net/http/httputil"
 
 	"github.com/gin-gonic/gin"
 )
 
-func ReqInfo(c *gin.Context) {
-	c.JSON(200, r.Response{
-		Code:    0,
-		Message: "req_info",
-		Data:    nil,
-	})
-}
-
 func SetupTestRoutes(engine *gin.Engine) {
 	TestRouteGroup := engine.Group("/test")
 	{
-		TestRouteGroup.POST("/req_info", ReqInfo)
+		TestRouteGroup.POST("/request", func(c *gin.Context) {
+			dump, _ := httputil.DumpRequest(c.Request, true)
+			c.JSON(200, r.Response{
+				Code:    0,
+				Message: "success",
+				Data:    string(dump),
+			})
+		})
 	}
 }

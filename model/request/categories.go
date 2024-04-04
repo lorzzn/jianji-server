@@ -8,7 +8,7 @@ type CreateCategoriesDatum struct {
 
 type UpdateCategoriesDatum struct {
 	CreateCategoriesDatum
-	Value *uint64
+	Value *uint64 `json:"value" form:"value"`
 }
 
 type CreateCategories struct {
