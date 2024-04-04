@@ -1,7 +1,9 @@
 package entity
 
+import "jianji-server/entity/common"
+
 type ResponseLog struct {
-	Universal
+	common.Universal
 	StatusCode int    `gorm:"type:int"`
 	RequestURL string `gorm:"type:text"`
 	SessionId  string `gorm:"type:text"`
