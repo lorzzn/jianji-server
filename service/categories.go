@@ -123,16 +123,17 @@ func (*Categories) Update(c *gin.Context) (code int, message string, data []*res
 }
 
 func (*Categories) Delete(c *gin.Context) (code int, message string, data any) {
-	params, _ := utils.GetRequestParams[request.DeleteCategories](c)
+	params, _ := utils.GetRequestParams[request.DeleteCategoriesBatch](c)
 	userUUID, _ := c.Get("UserUUID")
 
-	err := utils.DB.Where(&entity.Categories{Value: params.Value, UserUUID: userUUID.(uuid.UUID)}).Select("Categories").Delete(&entity.Categories{}).Error
+	err := utils.DB.Where("value IN (?) AND user_uuid = ?", params.Value, userUUID).Delete(&entity.Categories{}).Error
 	if err != nil {
 		code = r.ERROR_DB_OPE
 		data = nil
-		if errors.Is(err, gorm.ErrForeignKeyViolated) {
-			message = "该分类不为空，请先清空删除子分类"
-		}
+		message = "删除失败"
+		//if errors.Is(err, gorm.ErrForeignKeyViolated) {
+		//	message = "该分类不为空，请先清空删除子分类"
+		//}
 		return
 	}
 

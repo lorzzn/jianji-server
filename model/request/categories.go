@@ -22,3 +22,7 @@ type UpdateCategories struct {
 type DeleteCategories struct {
 	Value uint64 `json:"value" form:"value"`
 }
+
+type DeleteCategoriesBatch struct {
+	Value []uint64 `json:"value" form:"value"`
+}
