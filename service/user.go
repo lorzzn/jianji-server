@@ -160,8 +160,8 @@ func (*User) Active(c *gin.Context) (code int, message string, data *response.Lo
 
 	// 创建密码记录
 	pw := &entity.UserPassword{
-		UserUUID: user.UUID,
-		Password: password,
+		UniqueUserFK: entity.UniqueUserFK{UserUUID: user.UUID},
+		Password:     password,
 	}
 	err3 := tx.Create(&pw).Error
 	// 数据库报错

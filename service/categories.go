@@ -35,7 +35,7 @@ func (*Categories) Create(c *gin.Context) (code int, message string, data []*res
 	var err error
 	for _, datum := range params.Data {
 		category := &entity.Categories{
-			UserUUID:      userUUID.(uuid.UUID),
+			UserFK:        entity.UserFK{UserUUID: userUUID.(uuid.UUID)},
 			Label:         *datum.Label,
 			ParentValue:   datum.ParentValue,
 			OrdinalNumber: datum.OrdinalNumber,

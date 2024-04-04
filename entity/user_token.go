@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"jianji-server/entity/common"
 	"net"
 	"time"
 
@@ -9,8 +8,8 @@ import (
 )
 
 type UserToken struct {
-	common.Universal
-	common.UserFK
+	Universal
+	UserFK
 	Token             string    `gorm:"type:text" json:"-"`
 	TokenUUID         uuid.UUID `gorm:"type:uuid;comment:jwt token的uuid;unique;not null" json:"tokenUUID"`
 	ClientFingerprint string    `gorm:"type:text;comment:登录设备浏览器指纹" json:"clientFingerprint"`

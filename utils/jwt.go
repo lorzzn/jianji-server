@@ -76,7 +76,7 @@ func GenToken(c *gin.Context, userID uint64, userUUID uuid.UUID, fingerprint str
 
 	//将jwt token授权的详细信息储存到数据库
 	userToken := &entity.UserToken{
-		UserUUID:          userUUID,
+		UserFK:            entity.UserFK{UserUUID: userUUID},
 		Token:             token,
 		TokenUUID:         tokenUUID,
 		ClientFingerprint: fingerprint,
