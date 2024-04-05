@@ -8,28 +8,28 @@ import (
 )
 
 func SetupTagRoutes(router *gin.RouterGroup) {
-	TagRouterGroup := router.Group("/tag")
+	TagsRouterGroup := router.Group("/tags")
 	{
-		TagRouterGroup.POST("/list", ValidateCommon.AuthRequire(), TagApi.List)
-		TagRouterGroup.POST(
+		TagsRouterGroup.POST("/list", ValidateCommon.AuthRequire(), TagsApi.List)
+		TagsRouterGroup.POST(
 			"/create",
 			ValidateCommon.AuthRequire(),
 			utils.BindRequestParams[request.CreateTag],
-			ValidateTag.CreateTag(),
-			TagApi.Create,
+			ValidateTags.CreateTags(),
+			TagsApi.Create,
 		)
-		TagRouterGroup.POST(
+		TagsRouterGroup.POST(
 			"/update",
 			ValidateCommon.AuthRequire(),
 			utils.BindRequestParams[request.UpdateTag],
-			TagApi.Update,
+			TagsApi.Update,
 		)
-		TagRouterGroup.POST(
+		TagsRouterGroup.POST(
 			"/delete",
 			ValidateCommon.AuthRequire(),
 			utils.BindRequestParams[request.DeleteTagBatch],
-			ValidateTag.DeleteTag(),
-			TagApi.Delete,
+			ValidateTags.DeleteTags(),
+			TagsApi.Delete,
 		)
 	}
 }

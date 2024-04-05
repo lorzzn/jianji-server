@@ -5,5 +5,5 @@ import "jianji-server/service"
 var (
 	UserService       service.User
 	CategoriesService service.Categories
-	TagService        service.Tag
+	TagsService       service.Tags
 )

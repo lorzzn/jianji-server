@@ -9,10 +9,10 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-type Tag struct {
+type Tags struct {
 }
 
-func (*Tag) CreateTag() gin.HandlerFunc {
+func (*Tags) CreateTags() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		params, _ := utils.GetRequestParams[request.CreateTag](c)
 		if err := StructValidate(c, &params,
@@ -31,7 +31,7 @@ func (*Tag) CreateTag() gin.HandlerFunc {
 	}
 }
 
-func (*Tag) DeleteTag() gin.HandlerFunc {
+func (*Tags) DeleteTags() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		params, _ := utils.GetRequestParams[request.DeleteTagBatch](c)
 		if err := StructValidate(c, &params,

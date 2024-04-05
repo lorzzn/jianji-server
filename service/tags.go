@@ -11,10 +11,10 @@ import (
 	"github.com/google/uuid"
 )
 
-type Tag struct {
+type Tags struct {
 }
 
-func (*Tag) List(c *gin.Context) (code int, message string, data *[]response.Tag) {
+func (*Tags) List(c *gin.Context) (code int, message string, data *[]response.Tag) {
 	userUUID, _ := c.Get("UserUUID")
 
 	err := utils.DB.Model(&entity.Tag{}).Where("user_uuid = ?", userUUID).Find(&data).Error
@@ -25,7 +25,7 @@ func (*Tag) List(c *gin.Context) (code int, message string, data *[]response.Tag
 	return
 }
 
-func (*Tag) Create(c *gin.Context) (code int, message string, data []*response.Tag) {
+func (*Tags) Create(c *gin.Context) (code int, message string, data []*response.Tag) {
 	params, _ := utils.GetRequestParams[request.CreateTag](c)
 	userUUID, _ := c.Get("UserUUID")
 
@@ -57,7 +57,7 @@ func (*Tag) Create(c *gin.Context) (code int, message string, data []*response.T
 	return
 }
 
-func (*Tag) Update(c *gin.Context) (code int, message string, data []*response.Tag) {
+func (*Tags) Update(c *gin.Context) (code int, message string, data []*response.Tag) {
 	params, _ := utils.GetRequestParams[request.UpdateTag](c)
 	userUUID, _ := c.Get("UserUUID")
 
@@ -107,7 +107,7 @@ func (*Tag) Update(c *gin.Context) (code int, message string, data []*response.T
 	return
 }
 
-func (*Tag) Delete(c *gin.Context) (code int, message string, data any) {
+func (*Tags) Delete(c *gin.Context) (code int, message string, data any) {
 	params, _ := utils.GetRequestParams[request.DeleteTagBatch](c)
 	userUUID, _ := c.Get("UserUUID")
 
