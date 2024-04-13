@@ -17,7 +17,7 @@ type Categories struct {
 func (*Categories) List(c *gin.Context) (code int, message string, data *[]response.Categories) {
 	userUUID, _ := c.Get("UserUUID")
 
-	err := utils.DB.Model(&entity.Categories{}).Where("user_uuid = ?", userUUID).Find(&data).Error
+	err := utils.DB.Model(&entity.Category{}).Where("user_uuid = ?", userUUID).Find(&data).Error
 	if err != nil {
 		code = r.ERROR_DB_OPE
 		return
@@ -32,7 +32,7 @@ func (*Categories) Create(c *gin.Context) (code int, message string, data []*res
 	tx := utils.DB.Begin()
 	var err error
 	for _, datum := range params.Data {
-		category := &entity.Categories{
+		category := &entity.Category{
 			UserFK:        entity.UserFK{UserUUID: userUUID.(uuid.UUID)},
 			Label:         *datum.Label,
 			ParentValue:   datum.ParentValue,
@@ -77,7 +77,7 @@ func (*Categories) Update(c *gin.Context) (code int, message string, data []*res
 		}
 	}
 
-	var categories []entity.Categories
+	var categories []entity.Category
 	err := utils.DB.Where("value IN (?) AND user_uuid = ?", paramsValues, userUUID).Find(&categories).Error
 	if err != nil {
 		code = r.ERROR_DB_OPE
@@ -124,7 +124,7 @@ func (*Categories) Delete(c *gin.Context) (code int, message string, data any) {
 	params, _ := utils.GetRequestParams[request.DeleteCategoriesBatch](c)
 	userUUID, _ := c.Get("UserUUID")
 
-	err := utils.DB.Where("value IN (?) AND user_uuid = ?", params.Value, userUUID).Delete(&entity.Categories{}).Error
+	err := utils.DB.Where("value IN (?) AND user_uuid = ?", params.Value, userUUID).Delete(&entity.Category{}).Error
 	if err != nil {
 		code = r.ERROR_DB_OPE
 		data = nil

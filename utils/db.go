@@ -55,7 +55,7 @@ func AutoMigrateDB() {
 		&entity.UserPassword{},
 		&entity.ResponseLog{},
 		&entity.UserToken{},
-		&entity.Categories{},
+		&entity.Category{},
 		&entity.Tag{},
 	}
 
