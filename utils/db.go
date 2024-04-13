@@ -57,6 +57,8 @@ func AutoMigrateDB() {
 		&entity.UserToken{},
 		&entity.Category{},
 		&entity.Tag{},
+		&entity.Post{},
+		&entity.PostTags{},
 	}
 
 	for _, dbEntity := range dbEntities {
@@ -64,6 +66,18 @@ func AutoMigrateDB() {
 			log.Panicln("数据库自动迁移失败", err)
 		}
 	}
+}
+
+func BeginDatabaseQuery() *gorm.DB {
+	return DB.Begin()
+}
+
+func RollbackDatabaseQuery(query *gorm.DB) *gorm.DB {
+	return query.Rollback()
+}
+
+func CommitDatabaseQuery(query *gorm.DB) *gorm.DB {
+	return query.Commit()
 }
 
 func SetupDB() {

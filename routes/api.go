@@ -18,5 +18,6 @@ func SetApiRoutes(engine *gin.Engine) {
 		v1.SetupUserRoutes(ApiV1RouteGroup)
 		v1.SetupCategoriesRoutes(ApiV1RouteGroup)
 		v1.SetupTagRoutes(ApiV1RouteGroup)
+		v1.SetupPostRoutes(ApiV1RouteGroup)
 	}
 }
