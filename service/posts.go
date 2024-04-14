@@ -16,17 +16,44 @@ import (
 type Posts struct {
 }
 
-func (*Posts) List(c *gin.Context) (code int, message string, data *[]response.Post) {
+func (*Posts) List(c *gin.Context) (code int, message string, data *response.ListPost) {
 	userUUID, _ := c.Get("UserUUID")
+	params, _ := utils.GetRequestParams[request.ListPost](c)
 	query := utils.DBQueryBegin()
 
-	err := query.Model(&entity.Post{}).Preload(clause.Associations).Where("user_uuid = ?", userUUID).Find(&data).Error
+	pageNo := 1
+	if params.PageNo != nil {
+		pageNo = *params.PageNo
+	}
+	pageSize := 20
+	if params.PageSize != nil {
+		pageSize = *params.PageSize
+	}
+	offset := (pageNo - 1) * pageSize
+	var totalCount int64
+
+	data = &response.ListPost{
+		PageInfo: &response.PageInfo{
+			PageNo:     &pageNo,
+			PageSize:   &pageSize,
+			TotalCount: &totalCount,
+		},
+	}
+	err := query.
+		Model(&entity.Post{}).Preload(clause.Associations).
+		Where("user_uuid = ?", userUUID).
+		Count(&totalCount).
+		Limit(pageSize).
+		Offset(offset).
+		Find(&data.Data).
+		Error
 	if err != nil {
 		query.Rollback()
 		code = r.ERROR_DB_OPE
 		data = nil
 		return
 	}
+
 	query.Commit()
 	return
 }

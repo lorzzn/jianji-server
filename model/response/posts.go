@@ -15,3 +15,8 @@ type Post struct {
 	Public        bool      `json:"public"`
 	Status        uint64    `json:"status"`
 }
+
+type ListPost struct {
+	Data     *[]Post   `json:"data"`
+	PageInfo *PageInfo `json:"pageInfo"`
+}

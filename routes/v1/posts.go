@@ -10,7 +10,12 @@ import (
 func SetupPostRoutes(router *gin.RouterGroup) {
 	TagsRouterGroup := router.Group("/posts")
 	{
-		TagsRouterGroup.POST("/list", ValidateCommon.AuthRequire(), PostsApi.List)
+		TagsRouterGroup.POST(
+			"/list",
+			ValidateCommon.AuthRequire(),
+			utils.BindRequestParams[request.ListPost],
+			PostsApi.List,
+		)
 		TagsRouterGroup.POST(
 			"/get",
 			ValidateCommon.AuthRequire(),

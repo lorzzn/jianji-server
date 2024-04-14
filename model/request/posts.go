@@ -27,6 +27,10 @@ type UpdatePost struct {
 	UUID uuid.UUID `json:"uuid"`
 }
 
+type ListPost struct {
+	PageInfo
+}
+
 type GetPost struct {
 	UUID uuid.UUID `json:"uuid"`
 }
