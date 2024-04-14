@@ -29,7 +29,7 @@ func (*Categories) Create(c *gin.Context) (code int, message string, data []*res
 	params, _ := utils.GetRequestParams[request.CreateCategories](c)
 	userUUID, _ := c.Get("UserUUID")
 
-	tx := utils.DB.Begin()
+	tx := utils.DBQueryBegin()
 	var err error
 	for _, datum := range params.Data {
 		category := &entity.Category{
@@ -61,6 +61,7 @@ func (*Categories) Create(c *gin.Context) (code int, message string, data []*res
 		return
 	}
 
+	tx.Commit()
 	return
 }
 
@@ -85,7 +86,7 @@ func (*Categories) Update(c *gin.Context) (code int, message string, data []*res
 		return
 	}
 
-	tx := utils.DB.Begin()
+	tx := utils.DBQueryBegin()
 
 	for _, category := range categories {
 		paramValue := paramsValueMap[category.Value]

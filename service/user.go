@@ -140,7 +140,7 @@ func (*User) Active(c *gin.Context) (code int, message string, data *response.Lo
 	}
 
 	// 开始事务
-	tx := utils.DB.Begin()
+	tx := utils.DBQueryBegin()
 
 	// 创建用户
 	user := &entity.User{

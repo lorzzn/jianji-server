@@ -52,6 +52,9 @@ func main() {
 	engine.Use(middleware.RequestIdMiddleWare())
 	engine.Use(middleware.DecryptMiddleware())
 	engine.Use(middleware.TraceIdMiddleware())
+	engine.Use(middleware.TxQueryMiddleware())
+
+	// log 相关中间件
 	engine.Use(middleware.ResponseLoggerMiddleware())
 	engine.Use(middleware.ErrorLoggerMiddleware())
 	engine.Use(middleware.GinzapLoggerMiddleware())

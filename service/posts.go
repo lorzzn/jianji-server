@@ -22,10 +22,12 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *[]response.P
 
 	err := query.Model(&entity.Post{}).Preload(clause.Associations).Where("user_uuid = ?", userUUID).Find(&data).Error
 	if err != nil {
+		query.Rollback()
 		code = r.ERROR_DB_OPE
 		data = nil
 		return
 	}
+	query.Commit()
 	return
 }
 
@@ -36,10 +38,12 @@ func (*Posts) Get(c *gin.Context) (code int, message string, data *response.Post
 
 	err := query.Model(&entity.Post{}).Preload(clause.Associations).Where("user_uuid = ? AND uuid = ?", userUUID, params.UUID).Find(&data).Error
 	if err != nil {
+		query.Rollback()
 		code = r.ERROR_DB_OPE
 		data = nil
 		return
 	}
+	query.Commit()
 	return
 }
 
@@ -96,6 +100,7 @@ func (*Posts) Update(c *gin.Context) (code int, message string, data *response.P
 	//找到数据库记录
 	post, err := dao.PostDao.GetUserPostByPostUUID(userUUID.(uuid.UUID), params.UUID)
 	if err != nil {
+		query.Rollback()
 		code = r.ERROR_DB_OPE
 		data = nil
 		message = "文章不存在"
@@ -153,6 +158,7 @@ func (*Posts) Delete(c *gin.Context) (code int, message string, data any) {
 	//找到数据库记录
 	post, err := dao.PostDao.GetUserPostByPostUUID(userUUID.(uuid.UUID), params.UUID)
 	if err != nil {
+		query.Rollback()
 		code = r.ERROR_DB_OPE
 		data = nil
 		message = "文章不存在"

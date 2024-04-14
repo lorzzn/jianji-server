@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/samber/lo"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -79,6 +80,10 @@ func DBQueryRollback(query *gorm.DB) *gorm.DB {
 
 func DBQueryCommit(query *gorm.DB) *gorm.DB {
 	return query.Commit()
+}
+
+func DBContextTxQuery(c *gin.Context) *gorm.DB {
+	return c.MustGet("TxQuery").(*gorm.DB)
 }
 
 func SetupDB() {

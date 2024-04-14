@@ -18,5 +18,7 @@ func (*Post) GetUserPostByPostUUID(userUUID uuid.UUID, postUUID uuid.UUID) (post
 		Where("uuid = ? AND user_uuid = ?", postUUID, userUUID).
 		First(&post).
 		Error
+
+	query.Commit()
 	return
 }

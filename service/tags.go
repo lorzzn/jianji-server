@@ -29,7 +29,7 @@ func (*Tags) Create(c *gin.Context) (code int, message string, data []*response.
 	params, _ := utils.GetRequestParams[request.CreateTags](c)
 	userUUID, _ := c.Get("UserUUID")
 
-	tx := utils.DB.Begin()
+	tx := utils.DBQueryBegin()
 	var err error
 	for _, datum := range params.Data {
 		tag := &entity.Tag{
@@ -54,6 +54,7 @@ func (*Tags) Create(c *gin.Context) (code int, message string, data []*response.
 		return
 	}
 
+	tx.Commit()
 	return
 }
 
@@ -78,7 +79,7 @@ func (*Tags) Update(c *gin.Context) (code int, message string, data []*response.
 		return
 	}
 
-	tx := utils.DB.Begin()
+	tx := utils.DBQueryBegin()
 
 	for _, tag := range tags {
 		paramValue := paramsValueMap[tag.Value]
