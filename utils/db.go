@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"database/sql"
 	"fmt"
 	"jianji-server/config"
 	"jianji-server/entity"
@@ -34,15 +35,15 @@ func (c *DBLogger) Write(p []byte) (n int, err error) {
 	lines := strings.Split(raw, "\n")
 	latency := regexp.MustCompile("\\d+.\\d+[a-z]+").FindString(GetArrayItemByIndex(lines, 1, ""))
 	stack := GetArrayItemByIndex(lines, 0, "")
-	sql := strings.Join(lo.Drop(lines, 1), "\n")
+	sqlStr := strings.Join(lo.Drop(lines, 1), "\n")
 	latency = strings.Trim(latency, " \n")
 	stack = strings.Trim(stack, " \n")
-	sql = strings.Trim(sql, " \n")
+	sqlStr = strings.Trim(sqlStr, " \n")
 
-	c.logger.Info("Gorm log", zap.String("latency", latency), zap.String("stack", stack), zap.String("sql", sql))
+	c.logger.Info("Gorm log", zap.String("latency", latency), zap.String("stack", stack), zap.String("sql", sqlStr))
 	if regexp.MustCompile(`\D$`).MatchString(stack) {
 		fmt.Printf("%sBAD SQL%s %s\n", logger.Red, logger.Reset, stack)
-		fmt.Println(sql)
+		fmt.Println(sqlStr)
 	}
 
 	return len(p), nil
@@ -68,15 +69,15 @@ func AutoMigrateDB() {
 	}
 }
 
-func BeginDatabaseQuery() *gorm.DB {
-	return DB.Begin()
+func DBQueryBegin(opts ...*sql.TxOptions) *gorm.DB {
+	return DB.Begin(opts...)
 }
 
-func RollbackDatabaseQuery(query *gorm.DB) *gorm.DB {
+func DBQueryRollback(query *gorm.DB) *gorm.DB {
 	return query.Rollback()
 }
 
-func CommitDatabaseQuery(query *gorm.DB) *gorm.DB {
+func DBQueryCommit(query *gorm.DB) *gorm.DB {
 	return query.Commit()
 }
 

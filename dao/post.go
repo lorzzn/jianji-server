@@ -11,7 +11,7 @@ type Post struct {
 }
 
 func (*Post) GetUserPostByPostUUID(userUUID uuid.UUID, postUUID uuid.UUID) (post *entity.Post, err error) {
-	query := utils.BeginDatabaseQuery()
+	query := utils.DBQueryBegin()
 
 	//找到数据库记录
 	err = query.Model(&entity.Post{}).

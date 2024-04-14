@@ -17,7 +17,7 @@ type Posts struct {
 
 func (*Posts) List(c *gin.Context) (code int, message string, data *[]response.Post) {
 	userUUID, _ := c.Get("UserUUID")
-	query := utils.BeginDatabaseQuery()
+	query := utils.DBQueryBegin()
 
 	err := query.Model(&entity.Post{}).Preload("Tags").Where("user_uuid = ?", userUUID).Find(&data).Error
 	if err != nil {
@@ -31,7 +31,7 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *[]response.P
 func (*Posts) Create(c *gin.Context) (code int, message string, data *response.Post) {
 	params, _ := utils.GetRequestParams[request.CreatePost](c)
 	userUUID, _ := c.Get("UserUUID")
-	query := utils.BeginDatabaseQuery()
+	query := utils.DBQueryBegin()
 
 	var tags []entity.Tag
 	for _, tag := range *params.Tags {
@@ -72,7 +72,7 @@ func (*Posts) Create(c *gin.Context) (code int, message string, data *response.P
 func (*Posts) Update(c *gin.Context) (code int, message string, data *response.Post) {
 	params, _ := utils.GetRequestParams[request.UpdatePost](c)
 	userUUID, _ := c.Get("UserUUID")
-	query := utils.BeginDatabaseQuery()
+	query := utils.DBQueryBegin()
 
 	//找到数据库记录
 	post, err := dao.PostDao.GetUserPostByPostUUID(userUUID.(uuid.UUID), params.UUID)
@@ -96,7 +96,7 @@ func (*Posts) Update(c *gin.Context) (code int, message string, data *response.P
 		}
 	}
 	if err != nil {
-		utils.RollbackDatabaseQuery(query)
+		utils.DBQueryRollback(query)
 		code = r.ERROR_DB_OPE
 		data = nil
 		message = "保存失败"
@@ -115,13 +115,13 @@ func (*Posts) Update(c *gin.Context) (code int, message string, data *response.P
 
 	err = query.Model(&post).Preload("Tags").Updates(&updated).First(&data).Error
 	if err != nil {
-		utils.RollbackDatabaseQuery(query)
+		utils.DBQueryRollback(query)
 		code = r.ERROR_DB_OPE
 		data = nil
 		message = "保存失败"
 		return
 	}
-	utils.CommitDatabaseQuery(query)
+	utils.DBQueryCommit(query)
 
 	return
 }
@@ -129,7 +129,7 @@ func (*Posts) Update(c *gin.Context) (code int, message string, data *response.P
 func (*Posts) Delete(c *gin.Context) (code int, message string, data any) {
 	params, _ := utils.GetRequestParams[request.DeletePost](c)
 	userUUID, _ := c.Get("UserUUID")
-	query := utils.BeginDatabaseQuery()
+	query := utils.DBQueryBegin()
 
 	//找到数据库记录
 	post, err := dao.PostDao.GetUserPostByPostUUID(userUUID.(uuid.UUID), params.UUID)
