@@ -14,6 +14,11 @@ func (*Posts) List(c *gin.Context) {
 	r.OkJsonResult(c, code, message, data)
 }
 
+func (*Posts) Get(c *gin.Context) {
+	var code, message, data = PostsService.Get(c)
+	r.OkJsonResult(c, code, message, data)
+}
+
 func (*Posts) Create(c *gin.Context) {
 	var code, message, data = PostsService.Create(c)
 	r.OkJsonResult(c, code, message, data)

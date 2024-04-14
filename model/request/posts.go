@@ -27,6 +27,10 @@ type UpdatePost struct {
 	UUID uuid.UUID `json:"uuid"`
 }
 
-type DeletePost struct {
+type GetPost struct {
 	UUID uuid.UUID `json:"uuid"`
+}
+
+type DeletePost struct {
+	GetPost
 }

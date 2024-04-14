@@ -29,6 +29,20 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *[]response.P
 	return
 }
 
+func (*Posts) Get(c *gin.Context) (code int, message string, data *response.Post) {
+	userUUID, _ := c.Get("UserUUID")
+	query := utils.DBQueryBegin()
+	params, _ := utils.GetRequestParams[request.GetPost](c)
+
+	err := query.Model(&entity.Post{}).Preload(clause.Associations).Where("user_uuid = ? AND uuid = ?", userUUID, params.UUID).Find(&data).Error
+	if err != nil {
+		code = r.ERROR_DB_OPE
+		data = nil
+		return
+	}
+	return
+}
+
 func (*Posts) Create(c *gin.Context) (code int, message string, data *response.Post) {
 	params, _ := utils.GetRequestParams[request.CreatePost](c)
 	userUUID, _ := c.Get("UserUUID")
