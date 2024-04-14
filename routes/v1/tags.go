@@ -14,20 +14,20 @@ func SetupTagRoutes(router *gin.RouterGroup) {
 		TagsRouterGroup.POST(
 			"/create",
 			ValidateCommon.AuthRequire(),
-			utils.BindRequestParams[request.CreateTag],
+			utils.BindRequestParams[request.CreateTags],
 			ValidateTags.CreateTags(),
 			TagsApi.Create,
 		)
 		TagsRouterGroup.POST(
 			"/update",
 			ValidateCommon.AuthRequire(),
-			utils.BindRequestParams[request.UpdateTag],
+			utils.BindRequestParams[request.UpdateTags],
 			TagsApi.Update,
 		)
 		TagsRouterGroup.POST(
 			"/delete",
 			ValidateCommon.AuthRequire(),
-			utils.BindRequestParams[request.DeleteTagBatch],
+			utils.BindRequestParams[request.DeleteTags],
 			ValidateTags.DeleteTags(),
 			TagsApi.Delete,
 		)

@@ -33,7 +33,7 @@ func (*Categories) CreateCategories() gin.HandlerFunc {
 
 func (*Categories) DeleteCategories() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		params, _ := utils.GetRequestParams[request.DeleteCategoriesBatch](c)
+		params, _ := utils.GetRequestParams[request.DeleteCategories](c)
 		if err := StructValidate(c, &params,
 			validation.Field(&params.Value, validation.By(func(value interface{}) error {
 				value, ok := value.([]uint64)

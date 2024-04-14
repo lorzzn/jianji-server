@@ -1,25 +1,25 @@
 package request
 
-type CreateTagDatum struct {
+type CreateTagsDatum struct {
 	Label *string `json:"label" form:"label"`
 }
 type UpdateTagDatum struct {
-	CreateTagDatum
+	CreateTagsDatum
 	Value *uint64 `json:"value" form:"value"`
 }
 
-type CreateTag struct {
-	Data []CreateTagDatum `json:"data" form:"data"`
+type CreateTags struct {
+	Data []CreateTagsDatum `json:"data" form:"data"`
 }
 
-type UpdateTag struct {
+type UpdateTags struct {
 	Data []UpdateTagDatum `json:"data" form:"data"`
 }
 
-type DeleteTags struct {
+type DeleteTag struct {
 	Value uint64 `json:"value" form:"value"`
 }
 
-type DeleteTagBatch struct {
+type DeleteTags struct {
 	Value []uint64 `json:"value" form:"value"`
 }

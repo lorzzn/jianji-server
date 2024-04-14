@@ -27,7 +27,7 @@ func SetupCategoriesRoutes(router *gin.RouterGroup) {
 		CategoriesRouterGroup.POST(
 			"/delete",
 			ValidateCommon.AuthRequire(),
-			utils.BindRequestParams[request.DeleteCategoriesBatch],
+			utils.BindRequestParams[request.DeleteCategories],
 			ValidateCategories.DeleteCategories(),
 			CategoriesApi.Delete,
 		)

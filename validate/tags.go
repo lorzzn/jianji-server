@@ -14,10 +14,10 @@ type Tags struct {
 
 func (*Tags) CreateTags() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		params, _ := utils.GetRequestParams[request.CreateTag](c)
+		params, _ := utils.GetRequestParams[request.CreateTags](c)
 		if err := StructValidate(c, &params,
 			validation.Field(&params.Data, validation.Each(validation.By(func(value any) error {
-				value, ok := value.(request.CreateTagDatum)
+				value, ok := value.(request.CreateTagsDatum)
 				if !ok {
 					return errors.New("参数格式不正确")
 				}
@@ -33,7 +33,7 @@ func (*Tags) CreateTags() gin.HandlerFunc {
 
 func (*Tags) DeleteTags() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		params, _ := utils.GetRequestParams[request.DeleteTagBatch](c)
+		params, _ := utils.GetRequestParams[request.DeleteTags](c)
 		if err := StructValidate(c, &params,
 			validation.Field(&params.Value, validation.By(func(value interface{}) error {
 				value, ok := value.([]uint64)

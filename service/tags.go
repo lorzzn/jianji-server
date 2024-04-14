@@ -26,7 +26,7 @@ func (*Tags) List(c *gin.Context) (code int, message string, data *[]response.Ta
 }
 
 func (*Tags) Create(c *gin.Context) (code int, message string, data []*response.Tag) {
-	params, _ := utils.GetRequestParams[request.CreateTag](c)
+	params, _ := utils.GetRequestParams[request.CreateTags](c)
 	userUUID, _ := c.Get("UserUUID")
 
 	tx := utils.DB.Begin()
@@ -58,7 +58,7 @@ func (*Tags) Create(c *gin.Context) (code int, message string, data []*response.
 }
 
 func (*Tags) Update(c *gin.Context) (code int, message string, data []*response.Tag) {
-	params, _ := utils.GetRequestParams[request.UpdateTag](c)
+	params, _ := utils.GetRequestParams[request.UpdateTags](c)
 	userUUID, _ := c.Get("UserUUID")
 
 	var paramsValues []uint64
@@ -108,7 +108,7 @@ func (*Tags) Update(c *gin.Context) (code int, message string, data []*response.
 }
 
 func (*Tags) Delete(c *gin.Context) (code int, message string, data any) {
-	params, _ := utils.GetRequestParams[request.DeleteTagBatch](c)
+	params, _ := utils.GetRequestParams[request.DeleteTags](c)
 	userUUID, _ := c.Get("UserUUID")
 
 	err := utils.DB.Where("value IN (?) AND user_uuid = ?", params.Value, userUUID).Delete(&entity.Tag{}).Error

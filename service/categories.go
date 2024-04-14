@@ -121,7 +121,7 @@ func (*Categories) Update(c *gin.Context) (code int, message string, data []*res
 }
 
 func (*Categories) Delete(c *gin.Context) (code int, message string, data any) {
-	params, _ := utils.GetRequestParams[request.DeleteCategoriesBatch](c)
+	params, _ := utils.GetRequestParams[request.DeleteCategories](c)
 	userUUID, _ := c.Get("UserUUID")
 
 	err := utils.DB.Where("value IN (?) AND user_uuid = ?", params.Value, userUUID).Delete(&entity.Category{}).Error

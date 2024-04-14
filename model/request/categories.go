@@ -19,10 +19,10 @@ type UpdateCategories struct {
 	Data []UpdateCategoriesDatum `json:"data" form:"data"`
 }
 
-type DeleteCategories struct {
+type DeleteCategory struct {
 	Value uint64 `json:"value" form:"value"`
 }
 
-type DeleteCategoriesBatch struct {
+type DeleteCategories struct {
 	Value []uint64 `json:"value" form:"value"`
 }
