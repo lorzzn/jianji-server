@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm/clause"
 )
 
 type Posts struct {
@@ -19,7 +20,7 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *[]response.P
 	userUUID, _ := c.Get("UserUUID")
 	query := utils.DBQueryBegin()
 
-	err := query.Model(&entity.Post{}).Preload("Tags").Where("user_uuid = ?", userUUID).Find(&data).Error
+	err := query.Model(&entity.Post{}).Preload(clause.Associations).Where("user_uuid = ?", userUUID).Find(&data).Error
 	if err != nil {
 		code = r.ERROR_DB_OPE
 		data = nil
@@ -34,8 +35,12 @@ func (*Posts) Create(c *gin.Context) (code int, message string, data *response.P
 	query := utils.DBQueryBegin()
 
 	var tags []entity.Tag
-	for _, tag := range *params.Tags {
-		tags = append(tags, entity.Tag{Value: tag})
+	if params.TagValues != nil {
+		for _, tag := range *params.TagValues {
+			tags = append(tags, entity.Tag{Value: tag})
+		}
+	} else {
+		tags = nil
 	}
 
 	//创建
@@ -58,7 +63,7 @@ func (*Posts) Create(c *gin.Context) (code int, message string, data *response.P
 		return
 	}
 	//读取
-	err = query.Preload("Tags").Where(post).Find(&data).Error
+	err = query.Preload(clause.Associations).Where(post).Find(&data).Error
 	if err != nil {
 		query.Rollback()
 		data = nil
@@ -84,11 +89,11 @@ func (*Posts) Update(c *gin.Context) (code int, message string, data *response.P
 	}
 
 	//更新标签关联
-	if params.Tags != nil {
+	if params.TagValues != nil {
 		err = query.Model(&post).Association("Tags").Clear()
 		if err == nil {
 			var tagArray []entity.Tag
-			for _, tag := range *params.Tags {
+			for _, tag := range *params.TagValues {
 				tagArray = append(tagArray, entity.Tag{Value: tag})
 			}
 			post.Tags = &tagArray
@@ -113,7 +118,7 @@ func (*Posts) Update(c *gin.Context) (code int, message string, data *response.P
 		Status:        params.Status,
 	}
 
-	err = query.Model(&post).Preload("Tags").Updates(&updated).First(&data).Error
+	err = query.Model(&post).Updates(&updated).Preload(clause.Associations).First(&data).Error
 	if err != nil {
 		utils.DBQueryRollback(query)
 		code = r.ERROR_DB_OPE

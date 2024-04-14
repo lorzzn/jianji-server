@@ -5,7 +5,7 @@ import (
 )
 
 type PostTags struct {
-	Tags *[]uint64 `json:"tags"`
+	TagValues *[]uint64 `json:"tagValues"`
 }
 
 type PostCommon struct {

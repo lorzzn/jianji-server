@@ -14,7 +14,7 @@ import (
 type Categories struct {
 }
 
-func (*Categories) List(c *gin.Context) (code int, message string, data *[]response.Categories) {
+func (*Categories) List(c *gin.Context) (code int, message string, data *[]response.Category) {
 	userUUID, _ := c.Get("UserUUID")
 
 	err := utils.DB.Model(&entity.Category{}).Where("user_uuid = ?", userUUID).Find(&data).Error
@@ -25,7 +25,7 @@ func (*Categories) List(c *gin.Context) (code int, message string, data *[]respo
 	return
 }
 
-func (*Categories) Create(c *gin.Context) (code int, message string, data []*response.Categories) {
+func (*Categories) Create(c *gin.Context) (code int, message string, data []*response.Category) {
 	params, _ := utils.GetRequestParams[request.CreateCategories](c)
 	userUUID, _ := c.Get("UserUUID")
 
@@ -42,7 +42,7 @@ func (*Categories) Create(c *gin.Context) (code int, message string, data []*res
 		if err != nil {
 			break
 		}
-		data = append(data, &response.Categories{
+		data = append(data, &response.Category{
 			Label:         category.Label,
 			Value:         category.Value,
 			ParentValue:   category.ParentValue,
@@ -64,7 +64,7 @@ func (*Categories) Create(c *gin.Context) (code int, message string, data []*res
 	return
 }
 
-func (*Categories) Update(c *gin.Context) (code int, message string, data []*response.Categories) {
+func (*Categories) Update(c *gin.Context) (code int, message string, data []*response.Category) {
 	params, _ := utils.GetRequestParams[request.UpdateCategories](c)
 	userUUID, _ := c.Get("UserUUID")
 
@@ -100,7 +100,7 @@ func (*Categories) Update(c *gin.Context) (code int, message string, data []*res
 		if err != nil {
 			break
 		}
-		data = append(data, &response.Categories{
+		data = append(data, &response.Category{
 			Label:         category.Label,
 			Value:         category.Value,
 			ParentValue:   category.ParentValue,
