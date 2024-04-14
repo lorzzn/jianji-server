@@ -1,6 +1,8 @@
 package response
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 )
 
@@ -14,6 +16,8 @@ type Post struct {
 	Favoured      bool      `json:"favoured"`
 	Public        bool      `json:"public"`
 	Status        uint64    `json:"status"`
+	CreatedAt     time.Time `json:"createdAt"`
+	UpdatedAt     time.Time `json:"updatedAt"`
 }
 
 type ListPost struct {

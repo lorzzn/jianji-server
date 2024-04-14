@@ -45,6 +45,7 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *response.Lis
 		Count(&totalCount).
 		Limit(pageSize).
 		Offset(offset).
+		Order("updated_at desc").
 		Find(&data.Data).
 		Error
 	if err != nil {
