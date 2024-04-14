@@ -40,14 +40,14 @@ func (*Posts) Create(c *gin.Context) (code int, message string, data *response.P
 
 	//创建
 	post := &entity.Post{
-		UserFK:   entity.UserFK{UserUUID: userUUID.(uuid.UUID)},
-		Title:    params.Title,
-		Content:  params.Content,
-		Category: params.Category,
-		Tags:     &tags,
-		Favoured: params.Favoured,
-		Public:   params.Favoured,
-		Status:   params.Status,
+		UserFK:        entity.UserFK{UserUUID: userUUID.(uuid.UUID)},
+		Title:         params.Title,
+		Content:       params.Content,
+		CategoryValue: params.CategoryValue,
+		Tags:          &tags,
+		Favoured:      params.Favoured,
+		Public:        params.Favoured,
+		Status:        params.Status,
 	}
 	err := query.Create(post).Error
 	if err != nil {
@@ -105,12 +105,12 @@ func (*Posts) Update(c *gin.Context) (code int, message string, data *response.P
 
 	//更新其他数据
 	updated := entity.Post{
-		Title:    params.Title,
-		Content:  params.Content,
-		Category: params.Category,
-		Favoured: params.Favoured,
-		Public:   params.Public,
-		Status:   params.Status,
+		Title:         params.Title,
+		Content:       params.Content,
+		CategoryValue: params.CategoryValue,
+		Favoured:      params.Favoured,
+		Public:        params.Public,
+		Status:        params.Status,
 	}
 
 	err = query.Model(&post).Preload("Tags").Updates(&updated).First(&data).Error

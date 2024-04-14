@@ -9,12 +9,12 @@ type PostTags struct {
 }
 
 type PostCommon struct {
-	Title    string  `json:"title"`
-	Content  string  `json:"content"`
-	Category *uint64 `json:"category"`
-	Favoured *bool   `json:"favoured"`
-	Public   *bool   `json:"public"`
-	Status   *uint64 `json:"status"`
+	Title         string  `json:"title"`
+	Content       string  `json:"content"`
+	CategoryValue *uint64 `json:"categoryValue"`
+	Favoured      *bool   `json:"favoured"`
+	Public        *bool   `json:"public"`
+	Status        *uint64 `json:"status"`
 }
 
 type CreatePost struct {
