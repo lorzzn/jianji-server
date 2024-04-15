@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"jianji-server/dao"
 	"jianji-server/entity"
 	"jianji-server/model/request"
@@ -21,6 +22,7 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *response.Lis
 	params, _ := utils.GetRequestParams[request.ListPost](c)
 	query := utils.DBQueryBegin()
 
+	// 参数是否要使用默认值
 	pageNo := 1
 	if params.PageNo != nil {
 		pageNo = *params.PageNo
@@ -29,6 +31,15 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *response.Lis
 	if params.PageSize != nil {
 		pageSize = *params.PageSize
 	}
+	sortBy := "created_at"
+	if params.SortBy != nil {
+		sortBy = *params.SortBy
+	}
+	sortType := "desc"
+	if params.SortType != nil {
+		sortBy = *params.SortType
+	}
+
 	offset := (pageNo - 1) * pageSize
 	var totalCount int64
 
@@ -41,11 +52,16 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *response.Lis
 	}
 	err := query.
 		Model(&entity.Post{}).Preload(clause.Associations).
-		Where("user_uuid = ?", userUUID).
+		Where(&entity.Post{
+			UserFK: entity.UserFK{
+				UserUUID: userUUID.(uuid.UUID),
+			},
+			Archived: params.Archived,
+		}).
 		Count(&totalCount).
 		Limit(pageSize).
 		Offset(offset).
-		Order("updated_at desc").
+		Order(fmt.Sprintf("%s %s", sortBy, sortType)).
 		Find(&data.Data).
 		Error
 	if err != nil {

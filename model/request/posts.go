@@ -31,6 +31,9 @@ type UpdatePost struct {
 
 type ListPost struct {
 	PageInfo
+	Archived *bool   `json:"archived"`
+	SortBy   *string `json:"sortBy"`
+	SortType *string `json:"sortType"`
 }
 
 type GetPost struct {
