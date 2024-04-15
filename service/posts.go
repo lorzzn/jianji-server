@@ -40,6 +40,26 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *response.Lis
 		sortBy = *params.SortType
 	}
 
+	var postTags []entity.PostTags
+	postQuery := query.Model(&entity.Post{}).Preload(clause.Associations)
+	if params.TagValues != nil {
+		//在标签和文章关联表中根据tagValue找到所有数据
+		err := query.Model(&entity.PostTags{}).Where("tag_value IN (?)", *params.TagValues).Scan(&postTags).Error
+		if err != nil {
+			query.Rollback()
+			code = r.ERROR_DB_OPE
+			data = nil
+			return
+		}
+
+		//根据找到的关联关系先在post表中找到所有对应uuid的文章
+		var postUuids []uuid.UUID
+		for _, tag := range postTags {
+			postUuids = append(postUuids, tag.PostUUID)
+		}
+		postQuery.Where("uuid IN (?)", postUuids)
+	}
+
 	offset := (pageNo - 1) * pageSize
 	var totalCount int64
 
@@ -50,8 +70,7 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *response.Lis
 			TotalCount: &totalCount,
 		},
 	}
-	err := query.
-		Model(&entity.Post{}).Preload(clause.Associations).
+	err := postQuery.
 		Where(&entity.Post{
 			UserFK: entity.UserFK{
 				UserUUID: userUUID.(uuid.UUID),
