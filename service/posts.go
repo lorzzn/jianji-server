@@ -57,6 +57,7 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *response.Lis
 				UserUUID: userUUID.(uuid.UUID),
 			},
 			Archived: params.Archived,
+			Favoured: params.Favoured,
 		}).
 		Count(&totalCount).
 		Limit(pageSize).
