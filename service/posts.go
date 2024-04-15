@@ -97,6 +97,7 @@ func (*Posts) Create(c *gin.Context) (code int, message string, data *response.P
 		CategoryValue: params.CategoryValue,
 		Tags:          &tags,
 		Favoured:      params.Favoured,
+		Archived:      params.Archived,
 		Public:        params.Favoured,
 		Status:        params.Status,
 	}
@@ -161,6 +162,7 @@ func (*Posts) Update(c *gin.Context) (code int, message string, data *response.P
 		Content:       params.Content,
 		CategoryValue: params.CategoryValue,
 		Favoured:      params.Favoured,
+		Archived:      params.Archived,
 		Public:        params.Public,
 		Status:        params.Status,
 	}

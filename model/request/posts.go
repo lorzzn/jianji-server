@@ -15,6 +15,7 @@ type PostCommon struct {
 	Favoured      *bool   `json:"favoured"`
 	Public        *bool   `json:"public"`
 	Status        *uint64 `json:"status"`
+	Archived      *bool   `json:"archived"`
 }
 
 type CreatePost struct {

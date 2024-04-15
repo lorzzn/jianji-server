@@ -15,6 +15,7 @@ type Post struct {
 	Category      *Category `gorm:"foreignKey:CategoryValue;references:Value;" json:"category"`
 	Tags          *[]Tag    `gorm:"many2many:post_tags;foreignKey:UUID;joinForeignKey:PostUUID;references:Value;joinReferences:TagValue" json:"tags"`
 	Favoured      bool      `json:"favoured"`
+	Archived      *bool     `json:"archived"`
 	Public        bool      `json:"public"`
 	Status        uint64    `json:"status"`
 	CreatedAt     time.Time `json:"createdAt"`
