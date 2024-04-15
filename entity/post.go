@@ -5,6 +5,7 @@ type Post struct {
 	UserFK
 	Title         string    `gorm:"type:varchar(64);comment:标题" json:"title"`
 	Content       string    `gorm:"comment:内容" json:"content"`
+	Description   string    `gorm:"type:varchar(300);comment:文章描述" json:"description"`
 	CategoryValue *uint64   `gorm:"comment:分类" json:"categoryValue"`
 	Category      *Category `gorm:"foreignKey:CategoryValue;references:Value;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"category"`
 	Tags          *[]Tag    `gorm:"many2many:post_tags;foreignKey:UUID;joinForeignKey:PostUUID;references:Value;joinReferences:TagValue;" json:"tags"`

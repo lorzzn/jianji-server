@@ -11,6 +11,7 @@ type PostTags struct {
 type PostCommon struct {
 	Title         string  `json:"title"`
 	Content       string  `json:"content"`
+	Description   string  `json:"description"`
 	CategoryValue *uint64 `json:"categoryValue"`
 	Favoured      *bool   `json:"favoured"`
 	Public        *bool   `json:"public"`

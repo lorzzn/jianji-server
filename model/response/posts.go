@@ -11,6 +11,7 @@ type Post struct {
 	UUID          uuid.UUID `json:"uuid"`
 	Title         string    `json:"title"`
 	Content       string    `json:"content"`
+	Description   string    `json:"description"`
 	CategoryValue *uint64   `json:"categoryValue"`
 	Category      *Category `gorm:"foreignKey:CategoryValue;references:Value;" json:"category"`
 	Tags          *[]Tag    `gorm:"many2many:post_tags;foreignKey:UUID;joinForeignKey:PostUUID;references:Value;joinReferences:TagValue" json:"tags"`

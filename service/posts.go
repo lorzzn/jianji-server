@@ -94,6 +94,7 @@ func (*Posts) Create(c *gin.Context) (code int, message string, data *response.P
 		UserFK:        entity.UserFK{UserUUID: userUUID.(uuid.UUID)},
 		Title:         params.Title,
 		Content:       params.Content,
+		Description:   params.Description,
 		CategoryValue: params.CategoryValue,
 		Tags:          &tags,
 		Favoured:      params.Favoured,
@@ -160,6 +161,7 @@ func (*Posts) Update(c *gin.Context) (code int, message string, data *response.P
 	updated := entity.Post{
 		Title:         params.Title,
 		Content:       params.Content,
+		Description:   params.Description,
 		CategoryValue: params.CategoryValue,
 		Favoured:      params.Favoured,
 		Archived:      params.Archived,
