@@ -62,7 +62,7 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *response.Lis
 		Count(&totalCount).
 		Limit(pageSize).
 		Offset(offset).
-		Order(fmt.Sprintf("%s %s", sortBy, sortType)).
+		Order(fmt.Sprintf("%s %s, id desc", sortBy, sortType)).
 		Find(&data.Data).
 		Error
 	if err != nil {
