@@ -6,6 +6,7 @@ import (
 	"jianji-server/config"
 	"jianji-server/entity"
 	"log"
+	"reflect"
 	"regexp"
 	"strings"
 	"time"
@@ -86,18 +87,50 @@ func DBContextTxQuery(c *gin.Context) *gorm.DB {
 	return c.MustGet("TxQuery").(*gorm.DB)
 }
 
+type DBDsn struct {
+	Host     string `name:"host"`
+	Username string `name:"user"`
+	Password string `name:"password"`
+	DBName   string `name:"dbname"`
+	Port     string `name:"port"`
+	SSLMode  string `name:"sslmode"`
+	TimeZone string `name:"timezone"`
+}
+
+func (d DBDsn) toString() string {
+	dsn := ""
+	// 获取结构体的反射值
+	v := reflect.ValueOf(d)
+	t := reflect.TypeOf(d)
+
+	// 遍历结构体的字段
+	for i := 0; i < v.NumField(); i++ {
+		field := t.Field(i)
+		// 获取字段名
+		fieldName := v.Type().Field(i).Name
+		// 获取字段值
+		fieldValue := v.Field(i).Interface().(string)
+		name := field.Tag.Get("name")
+
+		if fieldValue != "" {
+			dsn += fmt.Sprintf("%s=%s ", lo.Ternary(name == "", fieldName, name), fieldValue)
+		}
+	}
+	return dsn
+}
+
 func SetupDB() {
 	postgresConfig := config.Postgres
-
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=%s TimeZone=%s",
-		postgresConfig.Host,
-		postgresConfig.Username,
-		postgresConfig.Password,
-		postgresConfig.DBName,
-		postgresConfig.Port,
-		postgresConfig.SSLMode,
-		postgresConfig.TimeZone,
-	)
+	dsn := DBDsn{
+		Host:     postgresConfig.Host,
+		Username: postgresConfig.Username,
+		Password: postgresConfig.Password,
+		DBName:   postgresConfig.DBName,
+		Port:     postgresConfig.Port,
+		SSLMode:  postgresConfig.SSLMode,
+		TimeZone: postgresConfig.TimeZone,
+	}.toString()
+	fmt.Println("dsn: ", dsn)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
@@ -113,6 +146,10 @@ func SetupDB() {
 				Colorful:                  false,       // Disable color
 			},
 		),
+		NowFunc: func() time.Time {
+			utc, _ := time.LoadLocation("")
+			return time.Now().In(utc)
+		},
 	})
 
 	if err != nil {
