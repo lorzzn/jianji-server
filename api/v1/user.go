@@ -50,6 +50,11 @@ func (*User) GetProfile(c *gin.Context) {
 	r.OkJsonResult(c, code, message, data)
 }
 
+func (*User) GetStatistics(c *gin.Context) {
+	var code, message, data = UserService.GetStatistics(c)
+	r.OkJsonResult(c, code, message, data)
+}
+
 func (*User) EditProfile(c *gin.Context) {
 	var code, message, data = UserService.EditProfile(c)
 	r.OkJsonResult(c, code, message, data)

@@ -55,6 +55,38 @@ func (*User) GetProfile(c *gin.Context) (code int, message string, data *respons
 	return
 }
 
+func (*User) GetStatistics(c *gin.Context) (code int, message string, data *response.UserStatistics) {
+	userUUID := c.MustGet("UserUUID").(uuid.UUID)
+
+	var totalPosts int64
+	var totalWords int64
+
+	query := utils.DBQueryBegin()
+	baseQuery := query.Model(&entity.Post{}).Where(&entity.Post{
+		UserFK: entity.UserFK{UserUUID: userUUID},
+	})
+
+	err := baseQuery.Count(&totalPosts).Error
+	if err == nil {
+		err = baseQuery.Select("SUM(LENGTH(content))").Row().Scan(&totalWords)
+	}
+	if err != nil {
+		query.Rollback()
+		data = nil
+		code = r.ERROR_DB_OPE
+		return
+	}
+
+	data = &response.UserStatistics{
+		TotalPosts: totalPosts,
+		TotalWords: totalWords,
+	}
+
+	query.Commit()
+
+	return
+}
+
 func (*User) RefreshToken(c *gin.Context) (code int, message string, data *response.RefreshToken) {
 	params, _ := utils.GetRequestParams[request.RefreshToken](c)
 	tokenData, err := utils.RefreshToken(c, params.Token, params.RefreshToken)

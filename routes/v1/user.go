@@ -45,6 +45,11 @@ func SetupUserRoutes(router *gin.RouterGroup) {
 			UserApi.GetProfile,
 		)
 		UserRouterGroup.POST(
+			"/statistics",
+			ValidateCommon.AuthRequire(),
+			UserApi.GetStatistics,
+		)
+		UserRouterGroup.POST(
 			"/edit-profile",
 			utils.BindRequestParams[request.EditProfile],
 			ValidateUser.EditProfile(),

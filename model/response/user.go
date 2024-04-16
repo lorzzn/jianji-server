@@ -16,3 +16,8 @@ type RefreshToken struct {
 	Token        string `json:"token"`
 	RefreshToken string `json:"refreshToken"`
 }
+
+type UserStatistics struct {
+	TotalPosts int64 `json:"totalPosts"`
+	TotalWords int64 `json:"totalWords"`
+}
