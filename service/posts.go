@@ -88,6 +88,7 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *response.Lis
 			Favoured:      params.Favoured,
 			CategoryValue: params.CategoryValue,
 		}).
+		Omit("content").
 		Count(&totalCount).
 		Limit(pageSize).
 		Offset(offset).
