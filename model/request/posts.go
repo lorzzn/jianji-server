@@ -31,11 +31,13 @@ type UpdatePost struct {
 
 type ListPost struct {
 	PageInfo
-	Archived  *bool     `json:"archived"`
-	Favoured  *bool     `json:"favoured"`
-	SortBy    *string   `json:"sortBy"`
-	SortType  *string   `json:"sortType"`
-	TagValues *[]uint64 `json:"tagValues"`
+	Archived      *bool     `json:"archived"`
+	Favoured      *bool     `json:"favoured"`
+	SortBy        *string   `json:"sortBy"`
+	SortType      *string   `json:"sortType"`
+	TagValues     *[]uint64 `json:"tagValues"`
+	CategoryValue *uint64   `json:"categoryValue"`
+	Keyword       *string   `json:"keyword"`
 }
 
 type GetPost struct {

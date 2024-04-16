@@ -40,6 +40,7 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *response.Lis
 		sortBy = *params.SortType
 	}
 
+	//根据指定标签值查找
 	var postTags []entity.PostTags
 	postQuery := query.Model(&entity.Post{}).Preload(clause.Associations)
 	if params.TagValues != nil {
@@ -60,6 +61,14 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *response.Lis
 		postQuery.Where("uuid IN (?)", postUuids)
 	}
 
+	//根据关键词查找
+	if params.Keyword != nil {
+		postQuery.Where(
+			"title LIKE ? OR content LIKE ? OR description LIKE ?",
+			"%"+*params.Keyword+"%", "%"+*params.Keyword+"%", "%"+*params.Keyword+"%",
+		)
+	}
+
 	offset := (pageNo - 1) * pageSize
 	var totalCount int64
 
@@ -75,8 +84,9 @@ func (*Posts) List(c *gin.Context) (code int, message string, data *response.Lis
 			UserFK: entity.UserFK{
 				UserUUID: userUUID.(uuid.UUID),
 			},
-			Archived: params.Archived,
-			Favoured: params.Favoured,
+			Archived:      params.Archived,
+			Favoured:      params.Favoured,
+			CategoryValue: params.CategoryValue,
 		}).
 		Count(&totalCount).
 		Limit(pageSize).
