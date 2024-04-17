@@ -68,7 +68,7 @@ func (*User) GetStatistics(c *gin.Context) (code int, message string, data *resp
 
 	err := baseQuery.Count(&totalPosts).Error
 	if err == nil {
-		err = baseQuery.Select("SUM(LENGTH(content))").Row().Scan(&totalWords)
+		err = baseQuery.Select("COALESCE(SUM(LENGTH(content)), 0)").Row().Scan(&totalWords)
 	}
 	if err != nil {
 		query.Rollback()
