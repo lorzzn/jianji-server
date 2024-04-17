@@ -49,3 +49,16 @@ func (*Categories) DeleteCategories() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func (*Categories) CategoryStatistics() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		params, _ := utils.GetRequestParams[request.CategoryStatistics](c)
+		if err := StructValidate(c, &params,
+			validation.Field(&params.Value, validation.Required),
+		); err != nil {
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}

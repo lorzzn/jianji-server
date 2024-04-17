@@ -31,5 +31,12 @@ func SetupCategoriesRoutes(router *gin.RouterGroup) {
 			ValidateCategories.DeleteCategories(),
 			CategoriesApi.Delete,
 		)
+		CategoriesRouterGroup.POST(
+			"/statistics",
+			ValidateCommon.AuthRequire(),
+			utils.BindRequestParams[request.CategoryStatistics],
+			ValidateCategories.CategoryStatistics(),
+			CategoriesApi.CategoryStatistics,
+		)
 	}
 }

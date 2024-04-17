@@ -26,3 +26,7 @@ type DeleteCategory struct {
 type DeleteCategories struct {
 	Value []uint64 `json:"value" form:"value"`
 }
+
+type CategoryStatistics struct {
+	Value uint64 `json:"value" form:"value"`
+}

@@ -138,3 +138,33 @@ func (*Categories) Delete(c *gin.Context) (code int, message string, data any) {
 
 	return
 }
+
+func (*Categories) CategoryStatistics(c *gin.Context) (code int, message string, data *response.CategoryStatistics) {
+	params, _ := utils.GetRequestParams[request.CategoryStatistics](c)
+	userUUID := c.MustGet("UserUUID").(uuid.UUID)
+
+	query := utils.DBQueryBegin()
+	var category entity.Category
+	var totalPosts int64
+
+	err := query.Model(&entity.Post{}).Where(&entity.Post{CategoryValue: &params.Value, UserFK: entity.UserFK{UserUUID: userUUID}}).Count(&totalPosts).Error
+	if err == nil {
+		err = query.Model(&entity.Category{}).Where(&entity.Category{Value: params.Value, UserFK: entity.UserFK{UserUUID: userUUID}}).Find(&category).Error
+	}
+
+	if err != nil {
+		query.Rollback()
+		data = nil
+		code = r.ERROR_DB_OPE
+		return
+	}
+
+	data = &response.CategoryStatistics{
+		TotalPosts: totalPosts,
+		CreateAt:   category.CreatedAt,
+		UpdatedAt:  category.UpdatedAt,
+	}
+
+	query.Commit()
+	return
+}
