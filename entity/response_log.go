@@ -10,3 +10,7 @@ type ResponseLog struct {
 	Request    string `gorm:"type:text"`
 	Response   string `gorm:"type:text"`
 }
+
+func (r ResponseLog) TableName() string {
+	return "response_log"
+}

@@ -21,3 +21,7 @@ type UserToken struct {
 	ExpiresAt         time.Time `gorm:"comment:过期时间" json:"expiresAt"`
 	Status            int       `gorm:"type:int;comment:token状态;not null;default:1" json:"status"`
 }
+
+func (u UserToken) TableName() string {
+	return "user_token"
+}

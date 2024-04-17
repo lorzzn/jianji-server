@@ -14,3 +14,7 @@ type Post struct {
 	Public        *bool     `gorm:"comment:公开;default:false" json:"public"`
 	Status        *uint64   `gorm:"comment:文章状态:0:待编辑,1: 草稿,2: 已发布,3: 隐藏;default:1" json:"status"`
 }
+
+func (p Post) TableName() string {
+	return "post"
+}

@@ -9,3 +9,7 @@ type Category struct {
 	ParentCategories *Category `gorm:"foreignKey:ParentValue;references:Value;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"-"`
 	OrdinalNumber    *uint64   `gorm:"comment:序数" json:"ordinalNumber"`
 }
+
+func (c Category) TableName() string {
+	return "category"
+}

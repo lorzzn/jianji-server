@@ -7,3 +7,7 @@ type User struct {
 	Email  string `gorm:"type:varchar(64);comment:邮箱;unique;not null" json:"email"`
 	Status int    `gorm:"type:int;comment:用户状态;not null;default:1" json:"status"`
 }
+
+func (u User) TableName() string {
+	return "user"
+}

@@ -7,3 +7,7 @@ type PostTags struct {
 	PostUUID uuid.UUID `gorm:"primary_key"`
 	TagValue uint64    `gorm:"primary_key"`
 }
+
+func (t PostTags) TableName() string {
+	return "post_tags"
+}
