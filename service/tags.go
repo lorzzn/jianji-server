@@ -135,7 +135,7 @@ func (*Tags) TagStatistics(c *gin.Context) (code int, message string, data *resp
 		Model(&entity.Post{}).
 		Select("post.uuid,post_tags.post_uuid").
 		Joins("INNER JOIN post_tags ON post.uuid = post_tags.post_uuid").
-		Where("post_tags.tag_value = ?", params.Value).
+		Where("post_tags.tag_value = ? AND post.user_uuid = ?", params.Value, userUUID).
 		Count(&totalPosts).
 		Error
 	if err == nil {
