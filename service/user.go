@@ -236,7 +236,7 @@ func (*User) Signup(c *gin.Context) (code int, message string, data *response.Lo
 	err = utils.SendActiveEmail(params.Email, string(gpw), params.Fingerprint)
 	if err != nil {
 		code = 500
-		message = "发送激活邮件失败，请检查您的邮箱地址或联系我们的技术支持团队。"
+		message = "发送激活邮件失败，请检查您的邮箱地址或稍后重试"
 		return
 	}
 
