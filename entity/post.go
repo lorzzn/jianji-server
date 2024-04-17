@@ -8,7 +8,7 @@ type Post struct {
 	Description   string    `gorm:"type:varchar(300);comment:文章描述" json:"description"`
 	CategoryValue *uint64   `gorm:"comment:分类" json:"categoryValue"`
 	Category      *Category `gorm:"foreignKey:CategoryValue;references:Value;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;" json:"category"`
-	Tags          *[]Tag    `gorm:"many2many:post_tags;foreignKey:UUID;joinForeignKey:PostUUID;references:Value;joinReferences:TagValue;" json:"tags"`
+	Tags          *[]Tag    `gorm:"many2many:post_tags;foreignKey:UUID;joinForeignKey:PostUUID;references:Value;joinReferences:TagValue;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"tags"`
 	Favoured      *bool     `gorm:"comment:标记为喜爱收藏;default:false" json:"favoured"`
 	Archived      *bool     `gorm:"comment:标记为归档;default:false" json:"archived"`
 	Public        *bool     `gorm:"comment:公开;default:false" json:"public"`
