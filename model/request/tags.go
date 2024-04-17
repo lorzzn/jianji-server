@@ -23,3 +23,7 @@ type DeleteTag struct {
 type DeleteTags struct {
 	Value []uint64 `json:"value" form:"value"`
 }
+
+type TagStatistics struct {
+	Value uint64 `json:"value" form:"value"`
+}

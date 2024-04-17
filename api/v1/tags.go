@@ -28,3 +28,8 @@ func (*Tags) Delete(c *gin.Context) {
 	var code, message, data = TagsService.Delete(c)
 	r.OkJsonResult(c, code, message, data)
 }
+
+func (*Tags) TagStatistics(c *gin.Context) {
+	var code, message, data = TagsService.TagStatistics(c)
+	r.OkJsonResult(c, code, message, data)
+}

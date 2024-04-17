@@ -49,3 +49,16 @@ func (*Tags) DeleteTags() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+func (*Tags) TagStatistics() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		params, _ := utils.GetRequestParams[request.TagStatistics](c)
+		if err := StructValidate(c, &params,
+			validation.Field(&params.Value, validation.Required),
+		); err != nil {
+			c.Abort()
+			return
+		}
+		c.Next()
+	}
+}

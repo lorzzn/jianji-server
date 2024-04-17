@@ -31,5 +31,12 @@ func SetupTagRoutes(router *gin.RouterGroup) {
 			ValidateTags.DeleteTags(),
 			TagsApi.Delete,
 		)
+		TagsRouterGroup.POST(
+			"/statistics",
+			ValidateCommon.AuthRequire(),
+			utils.BindRequestParams[request.TagStatistics],
+			ValidateTags.TagStatistics(),
+			TagsApi.TagStatistics,
+		)
 	}
 }

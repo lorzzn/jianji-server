@@ -122,3 +122,39 @@ func (*Tags) Delete(c *gin.Context) (code int, message string, data any) {
 
 	return
 }
+
+func (*Tags) TagStatistics(c *gin.Context) (code int, message string, data *response.TagStatistics) {
+	params, _ := utils.GetRequestParams[request.TagStatistics](c)
+	userUUID := c.MustGet("UserUUID").(uuid.UUID)
+
+	query := utils.DBQueryBegin()
+	var tag entity.Tag
+	var totalPosts int64
+
+	err := query.
+		Model(&entity.Post{}).
+		Select("post.uuid,post_tags.post_uuid").
+		Joins("INNER JOIN post_tags ON post.uuid = post_tags.post_uuid").
+		Where("post_tags.tag_value = ?", params.Value).
+		Count(&totalPosts).
+		Error
+	if err == nil {
+		err = query.Model(&entity.Tag{}).Where(&entity.Tag{Value: params.Value, UserFK: entity.UserFK{UserUUID: userUUID}}).Find(&tag).Error
+	}
+
+	if err != nil {
+		query.Rollback()
+		data = nil
+		code = r.ERROR_DB_OPE
+		return
+	}
+
+	data = &response.TagStatistics{
+		TotalPosts: totalPosts,
+		CreateAt:   tag.CreatedAt,
+		UpdatedAt:  tag.UpdatedAt,
+	}
+
+	query.Commit()
+	return
+}
