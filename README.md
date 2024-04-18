@@ -1,8 +1,8 @@
 # jianji-server
 
-## 配置数据库
+一个使用gorm，postgres，gin搭建的笔记项目的后端，前端项目：[jianji-web](https://github.com/lorzzn/jianji-web)
 
-### 使用docker
+## 配置数据库
 
 1. 新建容器
     ```bash
